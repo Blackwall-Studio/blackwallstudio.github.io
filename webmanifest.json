@@ -1,0 +1,18 @@
+{
+  "name": "Blackwall Studio",
+  "short_name": "Blackwall",
+  "description": "Extending the Lives of Games — multiplayer game development studio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait-primary",
+  "categories": ["games", "entertainment", "development"],
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "80x80",
+      "type": "image/png"
+    }
+  ]
+}
