@@ -147,6 +147,35 @@
       display: block;
     }
 
+    .nav-version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.7rem;
+      margin-left: 0.5rem;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.12);
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #00f0ff;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .nav-version-badge.ready {
+      opacity: 1;
+    }
+    .nav-version-badge .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #00f0ff;
+      flex-shrink: 0;
+    }
+
     .nav-links {
       display: flex;
       align-items: center;
@@ -714,6 +743,104 @@
     }
 
     /* ============================================
+       RELEASE LIST (3-releases)
+    ============================================ */
+    .release-list {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .release-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.2rem 1.5rem;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      transition: border-color 0.3s ease, background 0.3s ease;
+      flex-wrap: wrap;
+    }
+    .release-item:hover {
+      border-color: rgba(0, 240, 255, 0.1);
+      background: rgba(255,255,255,0.02);
+    }
+    .release-item-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .release-item-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.06);
+      border: 1px solid rgba(0, 240, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .release-item-version {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .release-item-version .num {
+      color: #00f0ff;
+    }
+    .release-item-meta {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 0.15rem;
+    }
+    .release-item-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .release-item .btn-tiny {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+    }
+    .release-item .btn-tiny:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(0, 240, 255, 0.2);
+      color: #00f0ff;
+    }
+    .release-loading {
+      color: rgba(255,255,255,0.3);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.5rem;
+      justify-content: center;
+    }
+    .release-loading .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-top-color: #00f0ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ============================================
        PROJECTS / SHOWCASE
     ============================================ */
     .projects-grid {
@@ -1094,6 +1221,10 @@
         <img src="favicon.png" alt="Blackwall Studio" width="40" height="40" />
       </div>
       Blackwall Studio
+      <span class="nav-version-badge" id="navVersionBadge">
+        <span class="dot"></span>
+        <span id="navVersionText">v—</span>
+      </span>
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
@@ -1308,27 +1439,11 @@
         </div>
       </div>
 
-      <!-- ======== RELEASE TRACKER ======== -->
-      <div class="release-tracker reveal" id="releaseTracker">
-        <div class="release-tracker-left">
-          <div class="release-tracker-badge">
-            <span class="live-dot"></span>
-            Latest Release
-          </div>
-          <div class="release-tracker-info" id="releaseInfo">
-            <div class="release-tracker-loading" id="releaseLoading">
-              <span class="spinner"></span>
-              Fetching latest version...
-            </div>
-          </div>
-        </div>
-        <div class="release-tracker-right" id="releaseActions" style="display: none;">
-          <a href="#" id="releaseDownloadBtn" class="btn-small primary" target="_blank" rel="noopener">
-            ⬇ Download
-          </a>
-          <a href="https://github.com/nobody71004/redsync/releases" target="_blank" rel="noopener" class="btn-small secondary">
-            All Releases →
-          </a>
+      <!-- ======== RELEASE LIST ======== -->
+      <div class="release-list" id="releaseList">
+        <div class="release-loading" id="releaseLoading">
+          <span class="spinner"></span>
+          Fetching latest releases...
         </div>
       </div>
     </div>
@@ -1701,56 +1816,79 @@
       }, 3000);
     });
 
-    // --- Release tracker ---
-    (async function fetchLatestRelease() {
-      const info = document.getElementById('releaseInfo');
+    // --- Release tracker + nav version badge ---
+    (function() {
+      const API = 'https://api.github.com/repos/nobody71004/redsync/releases?per_page=3';
+      const navBadge = document.getElementById('navVersionBadge');
+      const navText = document.getElementById('navVersionText');
+      const list = document.getElementById('releaseList');
       const loading = document.getElementById('releaseLoading');
-      const actions = document.getElementById('releaseActions');
-      const downloadBtn = document.getElementById('releaseDownloadBtn');
 
-      try {
-        const res = await fetch('https://api.github.com/repos/nobody71004/redsync/releases/latest');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+      fetch(API)
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+        .then(data => {
+          if (!Array.isArray(data) || data.length === 0) throw new Error();
 
-        const tag = data.tag_name || '';
-        const name = data.name || '';
-        const date = data.published_at ? new Date(data.published_at).toLocaleDateString('en-US', {
-          year: 'numeric', month: 'short', day: 'numeric'
-        }) : '';
-        const downloadUrl = data.assets?.length > 0
-          ? data.assets[0].browser_download_url
-          : data.zipball_url;
+          // --- Nav badge: latest version ---
+          const latest = data[0];
+          if (navBadge && navText) {
+            navText.textContent = latest.tag_name || 'v0.0.0';
+            navBadge.classList.add('ready');
+          }
 
-        loading.remove();
+          // --- Release list: up to 3 releases ---
+          if (loading) loading.remove();
 
-        const versionEl = document.createElement('div');
-        versionEl.className = 'release-tracker-version';
-        versionEl.innerHTML = `<span class="num">${escapeHtml(tag)}</span>`;
+          data.forEach((release, i) => {
+            const tag = release.tag_name || '';
+            const name = release.name || '';
+            const date = release.published_at
+              ? new Date(release.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+              : '';
+            const dlUrl = release.assets?.length > 0
+              ? release.assets[0].browser_download_url
+              : release.zipball_url;
+            const icons = ['🚀', '📡', '🛡'];
 
-        const metaEl = document.createElement('div');
-        metaEl.className = 'release-tracker-meta';
-        metaEl.textContent = [name, date].filter(Boolean).join(' · ');
+            const item = document.createElement('div');
+            item.className = 'release-item';
 
-        info.appendChild(versionEl);
-        info.appendChild(metaEl);
+            item.innerHTML = `
+              <div class="release-item-left">
+                <div class="release-item-badge">${icons[i] || '📦'}</div>
+                <div>
+                  <div class="release-item-version"><span class="num">${esc(tag)}</span></div>
+                  <div class="release-item-meta">${esc(name)}${date ? ' · ' + esc(date) : ''}</div>
+                </div>
+              </div>
+              <div class="release-item-right">
+                <a href="${esc(dlUrl)}" target="_blank" rel="noopener" class="btn-tiny">⬇ Download</a>
+                <a href="https://github.com/nobody71004/redsync/releases/tag/${esc(tag)}" target="_blank" rel="noopener" class="btn-tiny">Details →</a>
+              </div>
+            `;
 
-        if (downloadUrl) {
-          downloadBtn.href = downloadUrl;
-          actions.style.display = 'flex';
-        }
-      } catch (err) {
-        loading.remove();
-        const errEl = document.createElement('div');
-        errEl.className = 'release-tracker-error';
-        errEl.textContent = 'Could not fetch latest release. Check GitHub for updates.';
-        info.appendChild(errEl);
-      }
+            list.appendChild(item);
+          });
 
-      function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+          // Add "All Releases" link
+          const allLink = document.createElement('div');
+          allLink.style.cssText = 'text-align: center; margin-top: 0.25rem;';
+          allLink.innerHTML = '<a href="https://github.com/nobody71004/redsync/releases" target="_blank" rel="noopener" style="font-size:0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.3s ease;" onmouseover="this.style.color=\'#00f0ff\'" onmouseout="this.style.color=\'rgba(255,255,255,0.3)\'">View all releases →</a>';
+          list.appendChild(allLink);
+        })
+        .catch(() => {
+          if (loading) {
+            loading.textContent = 'Could not fetch releases.';
+            loading.style.color = 'rgba(255,255,255,0.25)';
+            loading.style.fontSize = '0.8rem';
+          }
+          // Nav badge shows placeholder
+          if (navText) navText.textContent = 'v—';
+        });
+
+      function esc(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       }
     })();
   </script>
