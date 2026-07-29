@@ -1,0 +1,4 @@
+# CNAME is untracked on purpose — only add it (with `git add -f CNAME`)
+# when the custom domain is purchased and DNS is ready.
+# See README.md → Option C: Custom Domain for instructions.
+CNAME
