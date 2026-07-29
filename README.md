@@ -157,26 +157,51 @@ git push -u origin main
 5. Click **Save**
 6. Wait ~1–2 minutes, then visit `https://blackwallstudio.github.io`
 
-> **Note**: The `.nojekyll` file in this repo tells GitHub Pages to serve the files as-is (no Jekyll processing). The `CNAME` file is pre-configured for the custom domain `blackwall.studio`.
+> **Note**: The `.nojekyll` file in this repo tells GitHub Pages to serve the files as-is (no Jekyll processing).
 
 ---
 
 ### Option B: Deploy Under Your Personal Account (Quick Start)
 
-If you want to get it live right now under your current GitHub account:
+If you want to get it live right now under your current GitHub account for testing:
 
 ```bash
-# Create the repo under your personal account
-gh repo create blackwallstudio.github.io --public --source=. --remote=origin --push
+# Create a project repo under your personal account
+# (Not `blackwallstudio.github.io` — that name only works at the root of the matching org)
+gh repo create blackwall-studio-website --public --source=. --remote=origin --push
 ```
 
-Then enable Pages in Settings (same as Step 3 above).
+Then enable Pages:
+1. Go to **Settings > Pages** for the new repo
+2. Under **Source**, select **Deploy from a branch**
+3. Set **Branch** to `main`, folder to `/ (root)`
+4. Click **Save**
 
-> You can transfer the repo to the `BlackwallStudio` org later via **Settings > Danger Zone > Transfer ownership**.
+The site will be live at `https://nobody71004.github.io/blackwall-studio-website/`.
+
+> When you're ready, transfer the repo to the `BlackwallStudio` org via **Settings > Danger Zone > Transfer ownership**, rename it to `blackwallstudio.github.io`, and the URL becomes `https://blackwallstudio.github.io`.
 
 ---
 
 ### Option C: Custom Domain (blackwall.studio)
+
+> **Important**: The `CNAME` file is present in your local directory but is **not tracked by git** yet. This is intentional — if committed before the domain is configured, it would break your GitHub Pages deployment. Follow the steps below to add it at the right time.
+
+#### Step 1: Buy the domain
+
+Purchase `blackwall.studio` from your preferred registrar (Namecheap, Cloudflare, Google Domains, etc.).
+
+#### Step 2: Add the CNAME file and configure DNS
+
+Once the domain is yours, add the CNAME to git, configure DNS, then push:
+
+```bash
+git add CNAME
+git commit -m "feat: Add CNAME for blackwall.studio custom domain"
+git push
+```
+
+Then configure DNS at your registrar:
 
 Once you own the `blackwall.studio` domain:
 
