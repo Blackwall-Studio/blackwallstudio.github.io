@@ -86,7 +86,7 @@
       z-index: 1;
       pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, #0a0a0f00 0%, #0a0a0f 100%),
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,10,15,0) 0%, rgba(10,10,15,0.75) 100%),
         radial-gradient(ellipse 40% 40% at 80% 80%, #00f0ff05 0%, transparent 100%),
         radial-gradient(ellipse 40% 40% at 20% 20%, #7c3aed08 0%, transparent 100%);
     }
@@ -147,28 +147,29 @@
       display: block;
     }
 
-    .nav-version-badge {
+    .hero-version-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.2rem 0.7rem;
-      margin-left: 0.5rem;
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.12);
+      gap: 0.45rem;
+      padding: 0.3rem 1rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(0, 240, 255, 0.2);
       border-radius: 100px;
-      font-size: 0.65rem;
-      font-weight: 600;
+      background: rgba(0, 240, 255, 0.05);
+      font-size: 0.75rem;
+      font-weight: 500;
       color: #00f0ff;
       font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.02em;
       white-space: nowrap;
       opacity: 0;
-      transition: opacity 0.4s ease;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s ease 0.3s forwards;
     }
-    .nav-version-badge.ready {
+    .hero-version-badge.ready {
       opacity: 1;
     }
-    .nav-version-badge .dot {
+    .hero-version-badge .dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
@@ -1357,6 +1358,9 @@
       background: rgba(245, 245, 247, 0.9);
       border-bottom-color: rgba(0,0,0,0.06);
     }
+    [data-theme="light"] .nav-logo {
+      color: #1a1a2e;
+    }
     [data-theme="light"] .hero h1 { color: #1a1a2e; }
     [data-theme="light"] .hero-sub { color: rgba(0,0,0,0.5); }
     [data-theme="light"] .hero-badge {
@@ -1429,8 +1433,8 @@
     [data-theme="light"] .form-note,
     [data-theme="light"] .form-note a { color: rgba(0,0,0,0.4); }
     [data-theme="light"] .form-note a { color: #0066cc; }
-    [data-theme="light"] .nav-version-badge { color: #0066cc; border-color: rgba(0,100,200,0.15); background: rgba(0,100,200,0.06); }
-    [data-theme="light"] .nav-version-badge .dot { background: #0066cc; }
+    [data-theme="light"] .hero-version-badge { color: #0066cc; border-color: rgba(0,100,200,0.15); background: rgba(0,100,200,0.06); }
+    [data-theme="light"] .hero-version-badge .dot { background: #0066cc; }
     [data-theme="light"] .apply-form input,
     [data-theme="light"] .apply-form select,
     [data-theme="light"] .apply-form textarea,
@@ -1529,10 +1533,6 @@
         <img src="favicon.png" alt="Blackwall Studio" width="40" height="40" />
       </div>
       Blackwall Studio
-      <span class="nav-version-badge" id="navVersionBadge">
-        <span class="dot"></span>
-        <span id="navVersionText">v—</span>
-      </span>
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
@@ -1557,6 +1557,10 @@
     <div class="hero-badge">
       <span class="dot"></span>
       Now Building
+    </div>
+    <div class="hero-version-badge" id="heroVersionBadge">
+      <span class="dot"></span>
+      <span id="heroVersionText">v—</span>
     </div>
     <h1>
       Extending the<br />
@@ -2335,11 +2339,17 @@
     function animate() {
       const elapsed = clock.getElapsedTime();
 
-      // Slow rotation of particle field
-      particles.rotation.y = elapsed * 0.012;
-      particles.rotation.x = Math.sin(elapsed * 0.005) * 0.05;
+      // Slow rotation of particle field (modulated by scroll)
+      const scrollFactor = 1 + window.__scrollRatio * 2;
+      particles.rotation.y = elapsed * (0.012 * scrollFactor);
+      particles.rotation.x = Math.sin(elapsed * 0.005 * scrollFactor) * 0.05;
       lineMesh.rotation.y = particles.rotation.y;
       lineMesh.rotation.x = particles.rotation.x;
+
+      // Move particles up as user scrolls for parallax feel
+      const scrollOffset = window.__scrollRatio * -5;
+      particles.position.y = scrollOffset;
+      lineMesh.position.y = scrollOffset;
 
       // Gentle wave motion on particles
       for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -2368,6 +2378,13 @@
 
   <!-- ======== VANILLA JS: NAV, SCROLL, REVEAL, FORM ======== -->
   <script>
+    // --- Scroll ratio for Three.js parallax ---
+    window.__scrollRatio = 0;
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      window.__scrollRatio = maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0;
+    }, { passive: true });
+
     // --- Mobile Nav ---
     const toggle = document.getElementById('mobileToggle');
     const navLinks = document.getElementById('navLinks');
@@ -2430,8 +2447,8 @@
     // --- Release tracker + nav version badge ---
     (function() {
       const API = 'https://api.github.com/repos/Blackwall-Studio/RedSync-Public/releases?per_page=3';
-      const navBadge = document.getElementById('navVersionBadge');
-      const navText = document.getElementById('navVersionText');
+      const heroBadge = document.getElementById('heroVersionBadge');
+      const heroText = document.getElementById('heroVersionText');
       const list = document.getElementById('releaseList');
       const loading = document.getElementById('releaseLoading');
 
@@ -2442,9 +2459,9 @@
 
           // --- Nav badge: latest version ---
           const latest = data[0];
-          if (navBadge && navText) {
-            navText.textContent = latest.tag_name || 'v0.0.0';
-            navBadge.classList.add('ready');
+          if (heroBadge && heroText) {
+            heroText.textContent = latest.tag_name || 'v0.0.0';
+            heroBadge.classList.add('ready');
           }
 
           // --- Release list: up to 3 releases ---
@@ -2501,8 +2518,8 @@
             loading.style.color = 'rgba(255,255,255,0.25)';
             loading.style.fontSize = '0.8rem';
           }
-          // Nav badge shows placeholder
-          if (navText) navText.textContent = 'v—';
+          // Hero badge shows placeholder
+          if (heroText) heroText.textContent = 'v—';
         });
 
       function esc(s) {
