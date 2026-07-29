@@ -620,128 +620,6 @@
     /* ============================================
        RELEASE TRACKER
     ============================================ */
-    .release-tracker {
-      margin-top: 3rem;
-      padding: 2rem 2.5rem;
-      background: rgba(255,255,255,0.01);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-      flex-wrap: wrap;
-      transition: border-color 0.4s ease;
-    }
-    .release-tracker:hover {
-      border-color: rgba(0, 240, 255, 0.12);
-    }
-    .release-tracker-left {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .release-tracker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 1rem;
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.15);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #00f0ff;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-    }
-    .release-tracker-badge .live-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #00f0ff;
-      animation: livePulse 1.5s ease-in-out infinite;
-    }
-    @keyframes livePulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 6px #00f0ff; }
-      50% { opacity: 0.3; box-shadow: 0 0 12px #00f0ff88; }
-    }
-    .release-tracker-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .release-tracker-version {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: -0.02em;
-    }
-    .release-tracker-version .num {
-      color: #00f0ff;
-    }
-    .release-tracker-meta {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.35);
-      margin-top: 0.2rem;
-    }
-    .release-tracker-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .release-tracker .btn-small {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 1.2rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-    .release-tracker .btn-small.primary {
-      background: linear-gradient(135deg, #00f0ff, #0066ff);
-      color: #0a0a0f;
-    }
-    .release-tracker .btn-small.primary:hover {
-      box-shadow: 0 4px 16px rgba(0, 240, 255, 0.25);
-      transform: translateY(-1px);
-    }
-    .release-tracker .btn-small.secondary {
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.7);
-    }
-    .release-tracker .btn-small.secondary:hover {
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.25);
-      color: #fff;
-    }
-    .release-tracker-loading {
-      color: rgba(255,255,255,0.3);
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .release-tracker-loading .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.08);
-      border-top-color: #00f0ff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .release-tracker-error {
-      color: rgba(255,255,255,0.25);
-      font-size: 0.8rem;
-    }
-
     /* ============================================
        RELEASE LIST (3-releases)
     ============================================ */
@@ -1873,7 +1751,15 @@
           // Add "All Releases" link
           const allLink = document.createElement('div');
           allLink.style.cssText = 'text-align: center; margin-top: 0.25rem;';
-          allLink.innerHTML = '<a href="https://github.com/nobody71004/redsync/releases" target="_blank" rel="noopener" style="font-size:0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.3s ease;" onmouseover="this.style.color=\'#00f0ff\'" onmouseout="this.style.color=\'rgba(255,255,255,0.3)\'">View all releases →</a>';
+          const allLinkA = document.createElement('a');
+          allLinkA.href = 'https://github.com/nobody71004/redsync/releases';
+          allLinkA.target = '_blank';
+          allLinkA.rel = 'noopener';
+          allLinkA.textContent = 'View all releases →';
+          allLinkA.style.cssText = 'font-size:0.8rem;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.3s ease;';
+          allLinkA.addEventListener('mouseenter', () => { allLinkA.style.color = '#00f0ff'; });
+          allLinkA.addEventListener('mouseleave', () => { allLinkA.style.color = 'rgba(255,255,255,0.3)'; });
+          allLink.appendChild(allLinkA);
           list.appendChild(allLink);
         })
         .catch(() => {
