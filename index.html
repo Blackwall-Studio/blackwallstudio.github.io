@@ -553,6 +553,41 @@
       line-height: 1.7;
     }
 
+    .tool-links {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .tool-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+    .tool-link.primary {
+      color: #00f0ff;
+      border: 1px solid rgba(0,240,255,0.2);
+    }
+    .tool-link.primary:hover {
+      background: rgba(0,240,255,0.08);
+    }
+    .tool-link.secondary {
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .tool-link.secondary:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .tool-note {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+    }
+
     /* ============================================
        PROJECTS / SHOWCASE
     ============================================ */
@@ -938,6 +973,7 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
       <li><a href="#services">Services</a></li>
+      <li><a href="#tools">Tools</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#team">Team</a></li>
       <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
@@ -1090,6 +1126,65 @@
     </div>
   </section>
 
+  <!-- ======== TOOLS ======== -->
+  <section id="tools" style="background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,240,255,0.03) 0%, transparent 100%);">
+    <div class="container">
+      <div class="section-label reveal">Custom Tools</div>
+      <h2 class="section-title reveal">Developed by Us</h2>
+      <p class="section-desc reveal">
+        We build real tools — not just mods. Launchers, server monitors, protocol analyzers,
+        and infrastructure utilities that power our work and are available for the community.
+      </p>
+      <div class="services-grid" style="margin-top: 3rem;">
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">🚀</div>
+          <h3>RedSync Launcher</h3>
+          <p>
+            A full-featured desktop launcher for installing, updating, and connecting to
+            RedSync multiplayer sessions. Built with Avalonia UI (.NET), it handles game path
+            detection, mod installation, server browsing, and one-click "Jack In" connectivity.
+          </p>
+          <div class="tool-links">
+            <a href="https://github.com/nobody71004/redsync" target="_blank" rel="noopener" class="tool-link primary">
+              ⌨ Source Code →
+            </a>
+            <a href="https://xbuniverse.duckdns.org/api/media/RedSyncLauncher.zip" target="_blank" rel="noopener" class="tool-link secondary">
+              ⬇ Download
+            </a>
+          </div>
+        </div>
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">📡</div>
+          <h3>RedSync Server</h3>
+          <p>
+            A dedicated .NET 9 game server with C++ networking core for low-latency player
+            synchronization. Features include admin panels, combat events (Project Smasher,
+            Cerberus), proximity voice chat, built-in anticheat, self-healing watchdog, and
+            Docker container support for 24/7 deployments.
+          </p>
+          <div class="tool-links">
+            <a href="https://github.com/nobody71004/redsync" target="_blank" rel="noopener" class="tool-link primary">
+              ⌨ Source Code →
+            </a>
+          </div>
+        </div>
+        <div class="service-card reveal reveal-delay-3">
+          <div class="service-icon">🛡</div>
+          <h3>Security &amp; Monitoring Suite</h3>
+          <p>
+            A collection of production tools for running game servers at scale: a real-time
+            watchdog bot with auto-restart on crash, an anti-regression system that detects
+            bad updates and rolls back automatically, and a health probe endpoint for
+            container orchestration.
+          </p>
+          <div class="tool-links">
+            <span class="tool-note">Bundled with RedSync server</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ======== PROJECTS / SHOWCASE ======== -->
   <section id="projects">
     <div class="container">
@@ -1225,6 +1320,7 @@
       <div class="footer-links">
         <a href="#about">About</a>
         <a href="#services">Services</a>
+        <a href="#tools">Tools</a>
         <a href="#projects">Projects</a>
         <a href="#team">Team</a>
       </div>
