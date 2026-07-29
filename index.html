@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackwall Studio — Extending the Lives of Games</title>
+  <meta name="description" content="Blackwall Studio is a multiplayer game development studio dedicated to extending the lives of games by bringing multiplayer experiences to titles that never had them." />
+  <meta property="og:title" content="Blackwall Studio" />
+  <meta property="og:description" content="Extending the Lives of Games — Multiplayer game development studio." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0a0a0f" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================
+       RESET & BASE
+    ============================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: #00f0ff33 transparent;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #00f0ff44; border-radius: 3px; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       THREE.JS CANVAS (background)
+    ============================================ */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================
+       OVERLAY GRADIENT
+    ============================================ */
+    .scene-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, #0a0a0f00 0%, #0a0a0f 100%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, #00f0ff05 0%, transparent 100%),
+        radial-gradient(ellipse 40% 40% at 20% 20%, #7c3aed08 0%, transparent 100%);
+    }
+
+    /* ============================================
+       NAVIGATION
+    ============================================ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px) saturate(1.2);
+      padding: 0.8rem 2rem;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #00f0ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #00f0ff;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-logo-icon::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #00f0ff22, transparent);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: #00f0ff;
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #00f0ff, #0066ff);
+      color: #0a0a0f !important;
+      padding: 0.55rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    }
+    .nav-cta:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+    }
+    .nav-cta::after { display: none !important; }
+
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+      z-index: 101;
+    }
+    .mobile-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s ease;
+      border-radius: 1px;
+    }
+    .mobile-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .mobile-toggle.open span:nth-child(2) { opacity: 0; }
+    .mobile-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* ============================================
+       HERO
+    ============================================ */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1.2rem;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 100px;
+      background: rgba(0, 240, 255, 0.05);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #00f0ff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00f0ff;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 4px #00f0ff; }
+      50% { opacity: 0.3; box-shadow: 0 0 8px #00f0ff88; }
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, #00f0ff 0%, #0066ff 50%, #7c3aed 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: rgba(255,255,255,0.5);
+      max-width: 650px;
+      margin: 1.5rem auto 2.5rem;
+      font-weight: 400;
+      line-height: 1.7;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.8s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2.2rem;
+      background: linear-gradient(135deg, #00f0ff, #0066ff);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 240, 255, 0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2.2rem;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.2s forwards;
+    }
+    .hero-scroll .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================
+       SECTION COMMON
+    ============================================ */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 6rem 2rem;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #00f0ff;
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: '';
+      width: 24px;
+      height: 1.5px;
+      background: #00f0ff;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    /* ============================================
+       SKIP LINK (accessibility)
+    ============================================ */
+    .skip-link {
+      position: fixed;
+      top: -100%;
+      left: 1rem;
+      z-index: 200;
+      padding: 0.8rem 1.5rem;
+      background: #00f0ff;
+      color: #0a0a0f;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    .section-desc {
+      color: rgba(255,255,255,0.5);
+      font-size: 1.1rem;
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ============================================
+       ABOUT / MISSION
+    ============================================ */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 3rem;
+    }
+    .about-text p {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 1.2rem;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+    .about-text p strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 1.8rem;
+      text-align: center;
+      transition: border-color 0.4s ease, transform 0.4s ease;
+    }
+    .stat-card:hover {
+      border-color: rgba(0, 240, 255, 0.2);
+      transform: translateY(-3px);
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00f0ff, #0066ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.3rem;
+      font-weight: 500;
+    }
+
+    /* ============================================
+       SERVICES
+    ============================================ */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .service-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .service-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(0, 240, 255, 0.15);
+      transform: translateY(-4px);
+    }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .service-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.7rem;
+    }
+    .service-card p {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* ============================================
+       PROJECTS / SHOWCASE
+    ============================================ */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .project-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .project-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(0, 240, 255, 0.15);
+      transform: translateY(-4px);
+    }
+    .project-image {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #0d0d1a, #1a1a2e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-image .placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.15;
+    }
+    .project-image .overlay-glow {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(0,240,255,0.1), transparent);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .project-info {
+      padding: 2rem;
+    }
+    .project-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #00f0ff;
+      padding: 0.25rem 0.75rem;
+      background: rgba(0, 240, 255, 0.08);
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+    .project-info h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .project-info p {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       TEAM
+    ============================================ */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .team-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: all 0.4s ease;
+    }
+    .team-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(0, 240, 255, 0.15);
+      transform: translateY(-4px);
+    }
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 1.2rem;
+      background: linear-gradient(135deg, #0d0d1a, #1a1a2e);
+      border: 2px solid rgba(0, 240, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00f0ff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .team-card h3 {
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .team-card .role {
+      color: #00f0ff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin: 0.3rem 0 0.8rem;
+    }
+    .team-card p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       CONTACT
+    ============================================ */
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 3rem;
+    }
+    .contact-info h3 {
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .contact-info p {
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      max-width: 400px;
+    }
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+    .contact-link:hover { color: #00f0ff; }
+    .contact-link .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .contact-form input,
+    .contact-form textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: #00f0ff66;
+    }
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(255,255,255,0.25);
+    }
+    .contact-form textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    footer {
+      position: relative;
+      z-index: 2;
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.9rem;
+    }
+    .footer-brand .bw-icon {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid rgba(0,240,255,0.3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #00f0ff;
+    }
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+    .footer-links a:hover { color: #00f0ff; }
+
+    /* ============================================
+       REVEAL ANIMATIONS
+    ============================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 1024px) {
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100vh;
+        background: rgba(10, 10, 15, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 6rem 2rem;
+        gap: 2rem;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        border-left: 1px solid rgba(0,240,255,0.08);
+      }
+      .nav-links a { font-size: 1.1rem; }
+      .mobile-toggle { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .form-note {
+        color: rgba(255,255,255,0.4);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+      }
+      .form-note a {
+        color: #00f0ff;
+        text-decoration: none;
+      }
+      .form-note a:hover {
+        text-decoration: underline;
+      }
+      .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+      .hero h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+    }
+
+    @media (max-width: 480px) {
+      section { padding: 4rem 1.2rem; }
+      .about-stats { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+      .stat-card { padding: 1.2rem; }
+      .stat-number { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======== SKIP LINK ======== -->
+  <a href="#about" class="skip-link">Skip to main content</a>
+
+  <!-- ======== THREE.JS BACKGROUND ======== -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="scene-overlay"></div>
+
+  <!-- ======== NAVIGATION ======== -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">BW</div>
+      Blackwall Studio
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ======== HERO ======== -->
+  <section class="hero" id="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Now Building
+    </div>
+    <h1>
+      Extending the<br />
+      <span class="gradient">Lives of Games</span>
+    </h1>
+    <p class="hero-sub">
+      Blackwall Studio is a multiplayer game development studio on a mission to
+      breathe new life into beloved titles — bringing rich, competitive, and
+      cooperative multiplayer experiences to games that never had them.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">
+        View Our Work ↓
+      </a>
+      <a href="#contact" class="btn-secondary">
+        Let's Build Together
+      </a>
+    </div>
+    <div class="hero-scroll">
+      Scroll
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ======== ABOUT / MISSION ======== -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label reveal">About</div>
+      <h2 class="section-title reveal">Our Mission</h2>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            <strong>Every great game deserves a second life.</strong> At Blackwall Studio,
+            we believe that the best multiplayer experiences aren't always the ones planned
+            from day one — sometimes they emerge from the passion of communities who refuse
+            to let a game fade into obscurity.
+          </p>
+          <p>
+            We specialize in <strong>retro-fitting multiplayer</strong> into games that shipped
+            without it, developing custom networking solutions, dedicated server infrastructure,
+            and seamless matchmaking systems that feel like they were always part of the original
+            design.
+          </p>
+          <p>
+            From underground modding scenes to full-scale studio partnerships, our work is defined
+            by one principle: <strong>games should be shared.</strong>
+          </p>
+        </div>
+        <div class="about-stats reveal reveal-delay-2">
+          <div class="stat-card">
+            <div class="stat-number">2019</div>
+            <div class="stat-label">Founded</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">12+</div>
+            <div class="stat-label">Titles Touched</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Active Players</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Possibilities</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== SERVICES ======== -->
+  <section id="services">
+    <div class="container">
+      <div class="section-label reveal">What We Do</div>
+      <h2 class="section-title reveal">Our Capabilities</h2>
+      <p class="section-desc reveal">
+        From reverse engineering netcode to building full-scale multiplayer ecosystems —
+        we bring the tools, talent, and tenacity to make any game social.
+      </p>
+      <div class="services-grid">
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">🔌</div>
+          <h3>Netcode &amp; Multiplayer Engineering</h3>
+          <p>
+            Custom networking solutions built from the ground up. Client-server architectures,
+            peer-to-peer rollback, dedicated server infrastructure, and seamless matchmaking
+            tailored to each game's unique engine and design.
+          </p>
+        </div>
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">🔄</div>
+          <h3>Game Preservation &amp; Revival</h3>
+          <p>
+            Bringing abandoned or single-player-only games back to life with modern multiplayer
+            capabilities. Server emulation, protocol reverse engineering, and community-hosted
+            infrastructure for games your players refuse to forget.
+          </p>
+        </div>
+        <div class="service-card reveal reveal-delay-3">
+          <div class="service-icon">⚡</div>
+          <h3>Modding SDKs &amp; Tools</h3>
+          <p>
+            Developing modding frameworks, plugin APIs, and SDKs that empower communities to
+            extend their favorite games. From Redscript to Lua — we build the toolchain so
+            creators can build the world.
+          </p>
+        </div>
+        <div class="service-card reveal reveal-delay-4">
+          <div class="service-icon">🌐</div>
+          <h3>Dedicated Server Infrastructure</h3>
+          <p>
+            Scalable, containerized server orchestration for game backends. Auto-scaling
+            matchmaking, region-based deployment, anti-cheat integration, and real-time
+            telemetry so your players always find a low-ping game.
+          </p>
+        </div>
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">🎮</div>
+          <h3>Cross-Platform Multiplayer</h3>
+          <p>
+            Bridging communities across PC, console, and cloud. Unified accounts, cross-save,
+            cross-play matchmaking, and platform-agnostic party systems that keep friends
+            together regardless of hardware.
+          </p>
+        </div>
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">🤝</div>
+          <h3>Studio Partnership &amp; Consulting</h3>
+          <p>
+            End-to-end consultation for studios adding multiplayer post-launch. Architecture
+            review, network design docs, load testing, latency optimization, and go-to-market
+            strategy for your game's online future.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== PROJECTS / SHOWCASE ======== -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label reveal">Our Work</div>
+      <h2 class="section-title reveal">Projects</h2>
+      <p class="section-desc reveal">
+        Every game we touch gains a heartbeat that lasts beyond its original design.
+        Here are some of the worlds we've expanded.
+      </p>
+      <div class="projects-grid">
+        <div class="project-card reveal">
+          <div class="project-image" role="img" aria-label="RedSync multiplayer project preview">
+            <div class="overlay-glow"></div>
+            <span class="placeholder-icon" aria-hidden="true">🌃</span>
+          </div>
+          <div class="project-info">
+            <span class="project-tag">Flagship Project</span>
+            <h3>RedSync</h3>
+            <p>
+              A groundbreaking multiplayer mod for Cyberpunk 2077 that brings full co-op and
+              competitive multiplayer to Night City. Custom netcode, dedicated servers, and
+              seamless player synchronization — built entirely from the ground up.
+            </p>
+          </div>
+        </div>
+        <div class="project-card reveal reveal-delay-2">
+          <div class="project-image" role="img" aria-label="Project Chimera multiplayer framework preview">
+            <div class="overlay-glow"></div>
+            <span class="placeholder-icon" aria-hidden="true">🗺️</span>
+          </div>
+          <div class="project-info">
+            <span class="project-tag">In Development</span>
+            <h3>Project Chimera</h3>
+            <p>
+              An unannounced multiplayer framework for a beloved open-world RPG. Bringing
+              seamless co-op, shared progression, and dynamic player-hosted servers to a
+              game that was never designed for multiplayer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== TEAM ======== -->
+  <section id="team">
+    <div class="container">
+      <div class="section-label reveal">The Studio</div>
+      <h2 class="section-title reveal">Meet the Team</h2>
+      <p class="section-desc reveal">
+        A distributed collective of engineers, reverse engineers, and game designers
+        united by a passion for connecting players.
+      </p>
+      <div class="team-grid">
+        <div class="team-card reveal">
+          <div class="team-avatar">MB</div>
+          <h3>Matt B.</h3>
+          <div class="role">Founder &amp; Lead Engineer</div>
+          <p>Architect of RedSync. Deep expertise in game networking, reverse engineering, and building multiplayer systems where none existed before.</p>
+        </div>
+        <div class="team-card reveal reveal-delay-1">
+          <div class="team-avatar">??</div>
+          <h3>You?</h3>
+          <div class="role">Join the Studio</div>
+          <p>We're always looking for talented engineers, modders, and creators who believe games are better together. Reach out — let's build something legendary.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== CONTACT ======== -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-label reveal">Contact</div>
+      <h2 class="section-title reveal">Let's Build Together</h2>
+      <p class="section-desc reveal">
+        Have a game you want to bring online? A modding community looking for infrastructure?
+        Or just want to say hello? We'd love to hear from you.
+      </p>
+      <div class="contact-wrap">
+        <div class="contact-info reveal">
+          <h3>Reach Out</h3>
+          <p>
+            Whether you're a studio exploring post-launch multiplayer, a modder looking
+            for support, or a publisher interested in our technology — the door is always open.
+          </p>
+          <div class="contact-links">
+            <a href="mailto:hello@blackwall.studio" class="contact-link">
+              <span class="icon">✉</span>
+              hello@blackwall.studio
+            </a>
+            <a href="https://github.com/BlackwallStudio" target="_blank" rel="noopener" class="contact-link">
+              <span class="icon">⌨</span>
+              github.com/BlackwallStudio
+            </a>
+            <a href="https://discord.gg/redsync" target="_blank" rel="noopener" class="contact-link">
+              <span class="icon">💬</span>
+              Join our Discord
+            </a>
+          </div>
+        </div>
+        <form class="contact-form reveal reveal-delay-2" id="contactForm" action="https://formspree.io/f/your-form-id" method="POST">
+          <label for="contactName" class="sr-only">Your Name</label>
+          <input id="contactName" name="name" type="text" placeholder="Your Name" required />
+          <label for="contactEmail" class="sr-only">Your Email</label>
+          <input id="contactEmail" name="email" type="email" placeholder="Your Email" required />
+          <label for="contactSubject" class="sr-only">Subject</label>
+          <input id="contactSubject" name="subject" type="text" placeholder="Subject" />
+          <label for="contactMessage" class="sr-only">Message</label>
+          <textarea id="contactMessage" name="message" placeholder="Tell us about your project..." required></textarea>
+          <button type="submit" class="btn-primary" style="align-self: flex-start;">
+            Send Message →
+          </button>
+          <p class="form-note">
+            Or email us directly at <a href="mailto:hello@blackwall.studio">hello@blackwall.studio</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="bw-icon">BW</div>
+        © 2026 Blackwall Studio
+      </div>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#projects">Projects</a>
+        <a href="#team">Team</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======== THREE.JS ======== -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+
+    // Canvas
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Scene
+    const scene = new THREE.Scene();
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 25;
+
+    // --- PARTICLE SYSTEM (Neural Network) ---
+    const PARTICLE_COUNT = 1800;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
+
+    const color1 = new THREE.Color('#00f0ff');
+    const color2 = new THREE.Color('#0066ff');
+    const color3 = new THREE.Color('#7c3aed');
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const i3 = i * 3;
+      // Spread across a large volume
+      positions[i3]     = (Math.random() - 0.5) * 70;
+      positions[i3 + 1] = (Math.random() - 0.5) * 70;
+      positions[i3 + 2] = (Math.random() - 0.5) * 40;
+
+      // Color gradient
+      const t = Math.random();
+      let c;
+      if (t < 0.33) c = color1.clone().lerp(color2, Math.random());
+      else if (t < 0.66) c = color2.clone().lerp(color3, Math.random());
+      else c = color3.clone().lerp(color1, Math.random());
+
+      colors[i3]     = c.r;
+      colors[i3 + 1] = c.g;
+      colors[i3 + 2] = c.b;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    // Particle material
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.08,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const particles = new THREE.Points(geometry, particleMaterial);
+    scene.add(particles);
+
+    // --- CONNECTION LINES (Network edges) ---
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.08,
+    });
+
+    // Pre-compute some lines to draw
+    const MAX_LINES = 600;
+    const linePositions = new Float32Array(MAX_LINES * 6); // 2 points per line
+    const lineOpacities = new Float32Array(MAX_LINES);
+
+    for (let i = 0; i < MAX_LINES; i++) {
+      const i6 = i * 6;
+      const idx1 = Math.floor(Math.random() * PARTICLE_COUNT);
+      const idx2 = Math.floor(Math.random() * PARTICLE_COUNT);
+      const i3_1 = idx1 * 3;
+      const i3_2 = idx2 * 3;
+
+      linePositions[i6]     = positions[i3_1];
+      linePositions[i6 + 1] = positions[i3_1 + 1];
+      linePositions[i6 + 2] = positions[i3_1 + 2];
+      linePositions[i6 + 3] = positions[i3_2];
+      linePositions[i6 + 4] = positions[i3_2 + 1];
+      linePositions[i6 + 5] = positions[i3_2 + 2];
+
+      lineOpacities[i] = Math.random();
+    }
+
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const lineMesh = new THREE.LineSegments(lineGeo, lineMaterial);
+    scene.add(lineMesh);
+
+    // Store for animation
+    const posAttr = geometry.attributes.position;
+    const particlePositions = posAttr.array;
+    const initialPositions = new Float32Array(particlePositions);
+
+    // --- MOUSE TRACKING ---
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    // --- RESIZE ---
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // --- ANIMATION LOOP ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+      const elapsed = clock.getElapsedTime();
+
+      // Slow rotation of particle field
+      particles.rotation.y = elapsed * 0.012;
+      particles.rotation.x = Math.sin(elapsed * 0.005) * 0.05;
+      lineMesh.rotation.y = particles.rotation.y;
+      lineMesh.rotation.x = particles.rotation.x;
+
+      // Gentle wave motion on particles
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const i3 = i * 3;
+        const ix = initialPositions[i3];
+        const iy = initialPositions[i3 + 1];
+        const iz = initialPositions[i3 + 2];
+
+        particlePositions[i3]     = ix + Math.sin(elapsed * 0.3 + iy * 0.1) * 0.4;
+        particlePositions[i3 + 1] = iy + Math.cos(elapsed * 0.25 + ix * 0.1) * 0.4;
+        particlePositions[i3 + 2] = iz + Math.sin(elapsed * 0.2 + (ix + iy) * 0.05) * 0.4;
+      }
+      posAttr.needsUpdate = true;
+
+      // Follow mouse subtly
+      camera.position.x += (mouseX * 3 - camera.position.x) * 0.02;
+      camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+
+  <!-- ======== VANILLA JS: NAV, SCROLL, REVEAL, FORM ======== -->
+  <script>
+    // --- Mobile Nav ---
+    const toggle = document.getElementById('mobileToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+
+    // Close mobile nav on link click
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // --- Navbar background on scroll ---
+    const navbar = document.getElementById('navbar');
+    let lastScrollY = 0;
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      navbar.classList.toggle('scrolled', scrollY > 60);
+      lastScrollY = scrollY;
+    });
+
+    // --- Reveal on scroll ---
+    const revealEls = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px',
+    });
+
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    // --- Contact form ---
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Message Sent!';
+      btn.style.background = 'linear-gradient(135deg, #00cc88, #00aa66)';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+        form.reset();
+      }, 3000);
+    });
+  </script>
+
+</body>
+</html>
