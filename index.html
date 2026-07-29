@@ -457,6 +457,24 @@
     }
 
     /* ============================================
+       HERO MAGNETIC TILT
+    ============================================ */
+    .hero-tilt {
+      transform-style: preserve-3d;
+      transition: transform 0.08s ease-out;
+      will-change: transform;
+    }
+    .hero-tilt .hero-badge,
+    .hero-tilt .hero-version-badge,
+    .hero-tilt h1,
+    .hero-tilt .hero-type-wrap,
+    .hero-tilt .hero-sub,
+    .hero-tilt .hero-actions,
+    .hero-tilt .hero-scroll {
+      transition: transform 0.08s ease-out;
+    }
+
+    /* ============================================
        SECTION COMMON
     ============================================ */
     section {
@@ -627,6 +645,15 @@
     }
     [data-theme="light"] .service-icon {
       color: #0066cc;
+    }
+    .service-card:hover .service-icon {
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), 0 0 40px rgba(0, 240, 255, 0.08);
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: scale(1.08);
+    }
+    [data-theme="light"] .service-card:hover .service-icon {
+      box-shadow: 0 0 16px rgba(0, 102, 204, 0.2), 0 0 32px rgba(0, 102, 204, 0.06);
+      border-color: rgba(0, 102, 204, 0.25);
     }
     .service-card h3 {
       font-size: 1.2rem;
@@ -1102,6 +1129,23 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       margin-top: 2rem;
+      position: relative;
+      padding-bottom: 4px;
+    }
+    .blog-filter-indicator {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      background: #7c3aed;
+      border-radius: 2px;
+      transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+    .blog-filter-indicator.show {
+      opacity: 1;
+    }
+    [data-theme="light"] .blog-filter-indicator {
+      background: #7c3aed;
     }
     .blog-filter {
       padding: 0.4rem 1.2rem;
@@ -1773,40 +1817,41 @@
 
   <!-- ======== HERO ======== -->
   <section class="hero" id="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      Now Building
-    </div>
-    <div class="hero-version-badge" id="heroVersionBadge">
-      <span class="dot"></span>
-      <span id="heroVersionText">v—</span>
-    </div>
-    <h1>
-      Extending the<br />
-      <span class="gradient">Lives of Games</span>
-    </h1>
-    <p class="hero-type-wrap">
-      We build <span class="hero-type" id="heroType"></span><span class="hero-type-cursor">|</span>
-    </p>
-    <p class="hero-sub">
-      Blackwall Studio is a multiplayer game development studio on a mission to
-      breathe new life into beloved titles — bringing rich, competitive, and
-      cooperative multiplayer experiences to games that never had them.
-    </p>
-    <div class="hero-actions">
-      <a href="#projects" class="btn-primary">
-        View Our Work ↓
-      </a>
-      <a href="#contact" class="btn-secondary">
-        Let's Build Together
-      </a>
-    </div>
-    <div class="hero-scroll">
-      Scroll
-      <div class="scroll-line"></div>
+    <div class="hero-tilt" id="heroTilt" style="perspective: 800px;">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Now Building
+      </div>
+      <div class="hero-version-badge" id="heroVersionBadge">
+        <span class="dot"></span>
+        <span id="heroVersionText">v—</span>
+      </div>
+      <h1>
+        Extending the<br />
+        <span class="gradient">Lives of Games</span>
+      </h1>
+      <p class="hero-type-wrap">
+        We build <span class="hero-type" id="heroType"></span><span class="hero-type-cursor">|</span>
+      </p>
+      <p class="hero-sub">
+        Blackwall Studio is a multiplayer game development studio on a mission to
+        breathe new life into beloved titles — bringing rich, competitive, and
+        cooperative multiplayer experiences to games that never had them.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">
+          View Our Work ↓
+        </a>
+        <a href="#contact" class="btn-secondary">
+          Let's Build Together
+        </a>
+      </div>
+      <div class="hero-scroll">
+        Scroll
+        <div class="scroll-line"></div>
+      </div>
     </div>
   </section>
-
   <!-- ======== ABOUT / MISSION ======== -->
   <section id="about">
     <div class="container">
@@ -2152,6 +2197,7 @@
         <button class="blog-filter" data-cat="Release">Releases</button>
         <button class="blog-filter" data-cat="Dev Diary">Dev Diaries</button>
         <button class="blog-filter" data-cat="Tooling">Tooling</button>
+        <div class="blog-filter-indicator" id="blogFilterIndicator"></div>
       </div>
       <div class="blog-grid" id="blogGrid" data-category="all">
         <!-- Rendered by JS -->
@@ -2434,8 +2480,21 @@
       document.querySelectorAll('.blog-filter').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.cat === cat);
       });
+      slideFilterIndicator();
       const grid = document.getElementById('blogGrid');
       if (grid) renderBlog(grid);
+    }
+
+    function slideFilterIndicator() {
+      const active = document.querySelector('.blog-filter.active');
+      const indicator = document.getElementById('blogFilterIndicator');
+      if (!active || !indicator) return;
+      const parent = indicator.parentElement;
+      const activeRect = active.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      indicator.style.left = (activeRect.left - parentRect.left) + 'px';
+      indicator.style.width = activeRect.width + 'px';
+      indicator.classList.add('show');
     }
 
     function renderBlog(grid) {
@@ -2479,6 +2538,10 @@
 
     loadBlog();
 
+    // Initial indicator position after load
+    setTimeout(slideFilterIndicator, 100);
+    window.addEventListener('resize', slideFilterIndicator);
+
     // --- Hide splash screen after scene ready ---
     // Use a small delay to let Three.js and typewriter settle, then fade splash
     let splashHidden = false;
@@ -2503,6 +2566,39 @@
     }
     // Wait for Three.js module to initialize (module scripts are deferred)
     setTimeout(hideSplash, 1800);
+
+    // --- Hero magnetic tilt on mouse move ---
+    const heroTilt = document.getElementById('heroTilt');
+    if (heroTilt) {
+      const TILT_MAX = 6; // max degrees
+      const tiltChildren = heroTilt.querySelectorAll('.hero-badge, .hero-version-badge, h1, .hero-type-wrap, .hero-sub, .hero-actions, .hero-scroll');
+
+      document.addEventListener('mousemove', (e) => {
+        const rect = heroTilt.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = (e.clientX - centerX) / (rect.width / 2);
+        const deltaY = (e.clientY - centerY) / (rect.height / 2);
+        const rotateY = deltaX * TILT_MAX;
+        const rotateX = -deltaY * TILT_MAX;
+
+        heroTilt.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+        // Subtle parallax offset on children for depth feel
+        tiltChildren.forEach((child, i) => {
+          const depth = 1 + (i * 0.15);
+          const tx = deltaX * depth * 2;
+          const ty = -deltaY * depth * 2;
+          child.style.transform = `translateX(${tx}px) translateY(${ty}px)`;
+        });
+      }, { passive: true });
+
+      // Reset on mouse leave
+      heroTilt.addEventListener('mouseleave', () => {
+        heroTilt.style.transform = '';
+        tiltChildren.forEach(child => { child.style.transform = ''; });
+      }, { passive: true });
+    }
 
     // --- Theme toggle ---
     const savedTheme = localStorage.getItem('bw-theme');
