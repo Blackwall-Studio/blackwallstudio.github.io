@@ -343,6 +343,42 @@
       text-align: center;
       padding: 6rem 2rem 4rem;
     }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,240,255,0.015) 2px,
+        rgba(0,240,255,0.015) 4px
+      );
+      animation: screenFlicker 8s steps(1) infinite;
+    }
+    @keyframes screenFlicker {
+      0%, 100% { opacity: 1; }
+      2% { opacity: 0.85; }
+      4% { opacity: 1; }
+      19% { opacity: 1; }
+      20% { opacity: 0.9; }
+      21% { opacity: 1; }
+      93% { opacity: 1; }
+      94% { opacity: 0.88; }
+      95% { opacity: 1; }
+    }
+
+    [data-theme="light"] .hero::after {
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.02) 2px,
+        rgba(0,0,0,0.02) 4px
+      );
+    }
 
     .hero-badge {
       display: inline-flex;
@@ -927,6 +963,7 @@
       align-items: center;
       justify-content: center;
       padding: 8px;
+      animation: logoPulse 3s ease-in-out infinite;
     }
     .project-image .project-logo-overlay img {
       width: 100%;
@@ -1000,6 +1037,11 @@
       80% { transform: translate(-2px, -1px); }
       100% { transform: translate(1px, 1px); }
     }
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 0 6px rgba(0,240,255,0.1), 0 0 12px rgba(0,240,255,0.05); transform: scale(1); }
+      50% { box-shadow: 0 0 16px rgba(0,240,255,0.25), 0 0 32px rgba(0,240,255,0.1); transform: scale(1.03); }
+    }
+
     @keyframes glitchSkew {
       0% { transform: skew(0deg); }
       2% { transform: skew(0.5deg); }
