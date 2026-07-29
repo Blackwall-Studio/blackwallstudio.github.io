@@ -570,6 +570,15 @@
     }
 
     /* ============================================
+       CARD MAGNETIC TILT (services, tools, roles)
+    ============================================ */
+    .card-tilt {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.3s ease-out;
+    }
+
+    /* ============================================
        SECTION COMMON
     ============================================ */
     section {
@@ -2276,7 +2285,7 @@
         we bring the tools, talent, and tenacity to make any game social.
       </p>
       <div class="services-grid">
-        <div class="service-card reveal reveal-delay-1">
+        <div class="service-card card-tilt reveal reveal-delay-1" data-tilt="4">
           <div class="service-icon">🔌</div>
           <h3>Netcode &amp; Multiplayer Engineering</h3>
           <p>
@@ -2285,7 +2294,7 @@
             tailored to each game's unique engine and design.
           </p>
         </div>
-        <div class="service-card reveal reveal-delay-2">
+        <div class="service-card card-tilt reveal reveal-delay-2" data-tilt="4">
           <div class="service-icon">🔄</div>
           <h3>Game Preservation &amp; Revival</h3>
           <p>
@@ -2312,7 +2321,7 @@
             telemetry so your players always find a low-ping game.
           </p>
         </div>
-        <div class="service-card reveal reveal-delay-1">
+        <div class="service-card card-tilt reveal reveal-delay-1" data-tilt="4">
           <div class="service-icon">🎮</div>
           <h3>Cross-Platform Multiplayer</h3>
           <p>
@@ -2321,7 +2330,7 @@
             together regardless of hardware.
           </p>
         </div>
-        <div class="service-card reveal reveal-delay-2">
+        <div class="service-card card-tilt reveal reveal-delay-2" data-tilt="4">
           <div class="service-icon">🤝</div>
           <h3>Studio Partnership &amp; Consulting</h3>
           <p>
@@ -2344,7 +2353,7 @@
         and infrastructure utilities that power our work and are available for the community.
       </p>
       <div class="services-grid" style="margin-top: 3rem;">
-        <div class="service-card reveal reveal-delay-1">
+        <div class="service-card card-tilt reveal reveal-delay-1" data-tilt="4">
           <div class="service-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
@@ -2369,7 +2378,7 @@
             </a>
           </div>
         </div>
-        <div class="service-card reveal reveal-delay-2">
+        <div class="service-card card-tilt reveal reveal-delay-2" data-tilt="4">
           <div class="service-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
@@ -2393,7 +2402,7 @@
             </a>
           </div>
         </div>
-        <div class="service-card reveal reveal-delay-3">
+        <div class="service-card card-tilt reveal reveal-delay-3" data-tilt="4">
           <div class="service-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -2411,7 +2420,7 @@
             <span class="tool-note">Bundled with RedSync server</span>
           </div>
         </div>
-        <div class="service-card reveal reveal-delay-4">
+        <div class="service-card card-tilt reveal reveal-delay-4" data-tilt="4">
           <div class="service-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -2431,7 +2440,7 @@
             </a>
           </div>
         </div>
-        <div class="service-card reveal reveal-delay-5">
+        <div class="service-card card-tilt reveal reveal-delay-5" data-tilt="4">
           <div class="service-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <!-- Microscope / reverse engineering workbench -->
@@ -2967,6 +2976,32 @@
         tiltChildren.forEach(child => { child.style.transform = ''; });
       }, { passive: true });
     }
+
+    // --- Card magnetic tilt (service, role cards) ---
+    (function() {
+      const cards = document.querySelectorAll('.card-tilt');
+      if (!cards.length) return;
+      let frameId = null;
+      document.addEventListener('mousemove', (e) => {
+        if (frameId) cancelAnimationFrame(frameId);
+        frameId = requestAnimationFrame(() => {
+          const maxDeg = 4;
+          cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = (e.clientX - cx) / (rect.width / 2);
+            const dy = (e.clientY - cy) / (rect.height / 2);
+            const rx = -dy * maxDeg;
+            const ry = dx * maxDeg;
+            card.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          });
+        });
+      }, { passive: true });
+      document.addEventListener('mouseleave', () => {
+        cards.forEach(card => { card.style.transform = ''; });
+      }, { passive: true });
+    })();
 
     // --- Command palette (Ctrl+K) ---
     const cmdOverlay = document.getElementById('cmdOverlay');

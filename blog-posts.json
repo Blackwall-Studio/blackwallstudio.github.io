@@ -46,5 +46,13 @@
     "excerpt": "A deep dive into how we built RedSync's networking layer from the ground up — from reverse engineering Cyberpunk 2077's game state to building a custom C++ synchronization core with GameNetworkingSockets.",
     "author": "Matthew Goodwin",
     "icon": "🔌"
+  },
+  {
+    "date": "Aug 3, 2026",
+    "category": "Dev Diary",
+    "title": "Crafting the Blackwall Studio Aesthetic: Glitch Text & CRT Effects",
+    "excerpt": "A behind-the-scenes look at how we built the Cyberpunk-inspired visual effects for blackwallstudio.com — CSS-only glitch text with stepped keyframe offsets, chromatic aberration on hover, CRT scan line overlays, and a breathing logo pulse. All in vanilla CSS, no JavaScript animation libraries.",
+    "author": "Matthew Goodwin",
+    "icon": "🎨"
   }
 ]
