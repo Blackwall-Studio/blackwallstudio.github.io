@@ -1037,6 +1037,110 @@
     }
 
     /* ============================================
+       BLOG / NEWS
+    ============================================ */
+    .blog-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .blog-card {
+      display: flex;
+      gap: 2rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+    .blog-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .blog-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(124, 58, 237, 0.2);
+      transform: translateY(-3px);
+    }
+    .blog-card:hover::before { opacity: 1; }
+    .blog-card-thumb {
+      width: 140px;
+      min-height: 100px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    @media (max-width: 600px) {
+      .blog-card { flex-direction: column; }
+      .blog-card-thumb { width: 100%; min-height: 80px; }
+    }
+    .blog-card-body { flex: 1; min-width: 0; }
+    .blog-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 0.5rem;
+    }
+    .blog-card-category {
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #7c3aed;
+    }
+    .blog-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+    .blog-card p.blog-card-excerpt {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .blog-card-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.3);
+    }
+    .blog-card-author-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #0066ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ============================================
        CONTACT
     ============================================ */
     .contact-wrap {
@@ -1278,6 +1382,7 @@
       <li><a href="#tools">Tools</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#team">Team</a></li>
+      <li><a href="#news">News</a></li>
       <li><a href="#careers">Careers</a></li>
       <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
     </ul>
@@ -1596,6 +1701,21 @@
     </div>
   </section>
 
+  <!-- ======== NEWS / BLOG ======== -->
+  <section id="news">
+    <div class="container">
+      <div class="section-label reveal">Updates</div>
+      <h2 class="section-title reveal">Latest News</h2>
+      <p class="section-desc reveal">
+        Dev diaries, release announcements, studio updates, and behind-the-scenes looks
+        at what we're building.
+      </p>
+      <div class="blog-grid" id="blogGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </section>
+
   <!-- ======== JOIN OUR TEAM ======== -->
   <section id="careers">
     <div class="container">
@@ -1756,6 +1876,7 @@
         <a href="#tools">Tools</a>
         <a href="#projects">Projects</a>
         <a href="#team">Team</a>
+        <a href="#news">News</a>
         <a href="#careers">Careers</a>
       </div>
     </div>
@@ -1795,6 +1916,68 @@
       e.preventDefault();
       handleFormSubmit(this, 'Contact');
     });
+  </script>
+
+  <script>
+    // --- Blog posts data ---
+    const blogPosts = [
+      {
+        date: 'Jul 28, 2026',
+        category: 'Studio Update',
+        title: 'Blackwall Studio Is Live',
+        excerpt: 'We are officially launching Blackwall Studio — a multiplayer game development studio dedicated to extending the lives of games. Our first release: the full studio website and a new org profile on GitHub. RedSync development continues at full speed.',
+        author: 'Matthew Goodwin',
+        icon: '🎉'
+      },
+      {
+        date: 'Jul 26, 2026',
+        category: 'Release',
+        title: 'RedSync v1.0.13 — New Events & Stability',
+        excerpt: 'RedSync 1.0.13 is out with new proximity voice chat improvements, Project Smasher combat event refinements, and dedicated server stability patches. The anti-regression watchdog now auto-rolls back bad updates before players are affected.',
+        author: 'Matthew Goodwin',
+        icon: '🔴'
+      },
+      {
+        date: 'Jul 20, 2026',
+        category: 'Tooling',
+        title: 'Council & Synapse Tools Released as Open Source',
+        excerpt: 'We have open-sourced two internal tools: Council, a multi-model AI deliberation engine, and Synapse, a reverse engineering workbench with HexStrike AI. Both are available now on our GitHub under the MIT license.',
+        author: 'Anthony Wells',
+        icon: '🛠'
+      },
+      {
+        date: 'Jun 15, 2026',
+        category: 'Dev Diary',
+        title: 'Inside the Netcode: Building RedSync from Scratch',
+        excerpt: 'A deep dive into how we built RedSync\'s networking layer from the ground up — from reverse engineering Cyberpunk 2077\'s game state to building a custom C++ synchronization core with GameNetworkingSockets.',
+        author: 'Matthew Goodwin',
+        icon: '🔌'
+      }
+    ];
+
+    function renderBlog() {
+      const grid = document.getElementById('blogGrid');
+      if (!grid) return;
+      grid.innerHTML = blogPosts.map((post, i) => `
+        <article class="blog-card reveal reveal-delay-${Math.min(i, 4)}">
+          <div class="blog-card-thumb">${post.icon}</div>
+          <div class="blog-card-body">
+            <div class="blog-card-meta">
+              <span class="blog-card-category">${post.category}</span>
+              <span>${post.date}</span>
+            </div>
+            <h3>${post.title}</h3>
+            <p class="blog-card-excerpt">${post.excerpt}</p>
+            <div class="blog-card-author">
+              <span class="blog-card-author-avatar">${post.author.split(' ').map(w => w[0]).join('')}</span>
+              ${post.author}
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    renderBlog();
   </script>
   <script type="importmap">
   {
