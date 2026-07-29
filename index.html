@@ -919,6 +919,32 @@
       border-color: rgba(0, 240, 255, 0.15);
       transform: translateY(-4px);
     }
+    .project-card:hover .project-image img {
+      filter: none;
+    }
+    /* Chromatic aberration / RGB split on hover */
+    .project-card .project-image::before,
+    .project-card .project-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      mix-blend-mode: screen;
+    }
+    .project-card .project-image::before {
+      background: linear-gradient(135deg, rgba(255,0,64,0.08), transparent 50%);
+      transform: translateX(-3px) scale(1.01);
+    }
+    .project-card .project-image::after {
+      background: linear-gradient(225deg, rgba(0,240,255,0.08), transparent 50%);
+      transform: translateX(3px) scale(1.01);
+    }
+    .project-card:hover .project-image::before,
+    .project-card:hover .project-image::after {
+      opacity: 1;
+    }
     .project-image {
       width: 100%;
       height: 220px;
@@ -970,6 +996,10 @@
       height: 100%;
       object-fit: contain;
       border-radius: 6px;
+    }
+    /* Chimera logo pulse — same as RedSync but stacked on logo overlay */
+    .project-image .chimera-placeholder {
+      animation: logoPulse 3s ease-in-out infinite;
     }
     .project-info {
       padding: 2rem;
@@ -2160,9 +2190,9 @@
         <span class="dot"></span>
         Now Building
       </div>
-      <div class="hero-version-badge" id="heroVersionBadge">
+      <div class="hero-version-badge" id="heroVersionBadge" style="display:none;">
         <span class="dot"></span>
-        <span id="heroVersionText">v—</span>
+        <span id="heroVersionText">v0.0.0</span>
       </div>
       <h1>
         Extending the<br />
@@ -2468,7 +2498,7 @@
         <div class="project-card reveal reveal-delay-2">
           <div class="project-image" role="img" aria-label="Project Chimera multiplayer framework preview">
             <div class="overlay-glow"></div>
-            <div style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+            <div class="chimera-placeholder" style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
               <div style="text-align:center;">
                 <span class="placeholder-icon" aria-hidden="true" style="display:block;font-size:2.5rem;opacity:0.4;margin-bottom:0.75rem;">🗺️</span>
                 <span style="
@@ -2668,19 +2698,21 @@
             </a>
           </div>
         </div>
-        <form class="contact-form reveal reveal-delay-2" id="contactForm">
-          <label for="contactName" class="sr-only">Your Name</label>
-          <input id="contactName" name="name" type="text" placeholder="Your Name" required />
-          <label for="contactEmail" class="sr-only">Your Email</label>
-          <input id="contactEmail" name="email" type="email" placeholder="Your Email" required />
-          <label for="contactSubject" class="sr-only">Subject</label>
-          <input id="contactSubject" name="subject" type="text" placeholder="Subject" />
-          <label for="contactMessage" class="sr-only">Message</label>
-          <textarea id="contactMessage" name="message" placeholder="Tell us about your project..." required></textarea>
-          <button type="submit" class="btn-primary" style="align-self: flex-start;">
-            Send Message →
-          </button>
-        </form>
+        <div class="contact-info reveal reveal-delay-2">
+          <h3>Prefer Email?</h3>
+          <p>
+            Drop us a message directly and we'll get back to you within 48 hours.
+          </p>
+          <div class="contact-links">
+            <a href="mailto:hello@blackwallstudio.dpdns.org" class="contact-link">
+              <span class="icon">✉</span>
+              hello@blackwallstudio.dpdns.org
+            </a>
+            <p style="color:rgba(255,255,255,0.35);font-size:0.85rem;line-height:1.6;margin-top:0.5rem;max-width:360px;">
+              For job applications, check out the <a href="#careers" style="color:#00f0ff;text-decoration:none;">Careers</a> section — we have a dedicated application form there.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -3632,6 +3664,7 @@
           const latest = data[0];
           if (heroBadge && heroText) {
             heroText.textContent = latest.tag_name || 'v0.0.0';
+            heroBadge.style.display = '';
             heroBadge.classList.add('ready');
           }
 
