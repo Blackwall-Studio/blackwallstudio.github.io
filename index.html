@@ -873,6 +873,170 @@
     }
 
     /* ============================================
+       CAREERS / JOIN OUR TEAM
+    ============================================ */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 1024px) {
+      .roles-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .roles-grid { grid-template-columns: 1fr; }
+    }
+
+    .role-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 2rem 1.8rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .role-card:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(124, 58, 237, 0.2);
+      transform: translateY(-4px);
+    }
+    .role-card:hover::before { opacity: 1; }
+
+    .role-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .role-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    .role-stack {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #7c3aed;
+      margin-bottom: 0.8rem;
+      font-weight: 500;
+    }
+    .role-desc {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .careers-cta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 4rem;
+      padding: 3rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+    }
+    @media (max-width: 768px) {
+      .careers-cta { grid-template-columns: 1fr; padding: 2rem; }
+    }
+
+    .careers-cta-content h3 {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .careers-cta-content p {
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+      max-width: 450px;
+    }
+
+    .careers-remote {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.4) !important;
+    }
+    .remote-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    .apply-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .apply-form input,
+    .apply-form select,
+    .apply-form textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    .apply-form input:focus,
+    .apply-form select:focus,
+    .apply-form textarea:focus {
+      border-color: #7c3aed66;
+    }
+    .apply-form input::placeholder,
+    .apply-form textarea::placeholder {
+      color: rgba(255,255,255,0.25);
+    }
+    .apply-form select {
+      appearance: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.5);
+    }
+    .apply-form select option {
+      background: #0a0a0f;
+      color: #fff;
+    }
+    .apply-form select:valid {
+      color: #fff;
+    }
+    .apply-form textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    /* ============================================
        CONTACT
     ============================================ */
     .contact-wrap {
@@ -1002,6 +1166,33 @@
     .footer-links a:hover { color: #00f0ff; }
 
     /* ============================================
+       UTILITY (accessibility, form notes)
+    ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .form-note {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+    .form-note a {
+      color: #00f0ff;
+      text-decoration: none;
+    }
+    .form-note a:hover {
+      text-decoration: underline;
+    }
+
+    /* ============================================
        REVEAL ANIMATIONS
     ============================================ */
     .reveal {
@@ -1048,29 +1239,6 @@
       .services-grid { grid-template-columns: 1fr; }
       .projects-grid { grid-template-columns: 1fr; }
       .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-      .form-note {
-        color: rgba(255,255,255,0.4);
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-      }
-      .form-note a {
-        color: #00f0ff;
-        text-decoration: none;
-      }
-      .form-note a:hover {
-        text-decoration: underline;
-      }
       .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
       .hero h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
     }
@@ -1110,6 +1278,7 @@
       <li><a href="#tools">Tools</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#team">Team</a></li>
+      <li><a href="#careers">Careers</a></li>
       <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
     </ul>
     <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
@@ -1427,6 +1596,100 @@
     </div>
   </section>
 
+  <!-- ======== JOIN OUR TEAM ======== -->
+  <section id="careers">
+    <div class="container">
+      <div class="section-label reveal">Join Our Team</div>
+      <h2 class="section-title reveal">We're Hiring</h2>
+      <p class="section-desc reveal">
+        We're looking for passionate engineers and creators who want to push the boundaries
+        of multiplayer gaming. If you love reverse engineering, netcode, modding, or building
+        developer tools — we'd love to hear from you.
+      </p>
+
+      <div class="roles-grid reveal">
+        <div class="role-card reveal reveal-delay-1">
+          <div class="role-icon">🔧</div>
+          <h3>C++ Network Engineer</h3>
+          <p class="role-stack">C++20, GameNetworkingSockets, ASIO</p>
+          <p class="role-desc">Build and optimize custom netcode, packet protocols, and dedicated server infrastructure for multiplayer experiences.</p>
+        </div>
+        <div class="role-card reveal reveal-delay-2">
+          <div class="role-icon">🎮</div>
+          <h3>Gameplay Engineer</h3>
+          <p class="role-stack">C++, RE tools, Lua/REDscript</p>
+          <p class="role-desc">Reverse engineer game binaries, build modding SDKs, and implement co-op and competitive game modes.</p>
+        </div>
+        <div class="role-card reveal reveal-delay-3">
+          <div class="role-icon">🦀</div>
+          <h3>Rust Tooling Engineer</h3>
+          <p class="role-stack">Rust, Tauri, Tokio</p>
+          <p class="role-desc">Develop CLI tools, launchers, and automation that power the entire modding ecosystem.</p>
+        </div>
+        <div class="role-card reveal reveal-delay-1">
+          <div class="role-icon">🌐</div>
+          <h3>Full-Stack Web Developer</h3>
+          <p class="role-stack">React, Node.js, Tailwind</p>
+          <p class="role-desc">Build and maintain the studio website, dashboards, and community platforms that connect our players.</p>
+        </div>
+        <div class="role-card reveal reveal-delay-2">
+          <div class="role-icon">🧪</div>
+          <h3>QA / Test Engineer</h3>
+          <p class="role-stack">Python, Playwright, CI/CD</p>
+          <p class="role-desc">Test multiplayer builds, write automated test suites, and track regressions across every release.</p>
+        </div>
+      </div>
+
+      <div class="careers-cta reveal">
+        <div class="careers-cta-content">
+          <h3>Ready to Build?</h3>
+          <p>
+            Email us with your resume and a note about what excites you. Include links to your
+            GitHub, portfolio, or any modding or reverse engineering work you've done.
+            No formal cover letter needed — just what you've built and why it matters to you.
+          </p>
+          <p class="careers-remote">
+            <span class="remote-dot"></span>
+            Remote-first studio — if you can ship code, you can ship from anywhere.
+          </p>
+        </div>
+
+        <!-- ======== APPLICATION FORM ======== -->
+        <form class="apply-form" id="applyForm">
+          <label for="applyName" class="sr-only">Your Name</label>
+          <input id="applyName" name="name" type="text" placeholder="Your Name" required />
+
+          <label for="applyEmail" class="sr-only">Your Email</label>
+          <input id="applyEmail" name="email" type="email" placeholder="Your Email" required />
+
+          <label for="applyRole" class="sr-only">Role Interested In</label>
+          <select id="applyRole" name="role" required>
+            <option value="" disabled selected>Select a role…</option>
+            <option value="C++ Network Engineer">C++ Network Engineer</option>
+            <option value="Gameplay Engineer">Gameplay Engineer</option>
+            <option value="Rust Tooling Engineer">Rust Tooling Engineer</option>
+            <option value="Full-Stack Web Developer">Full-Stack Web Developer</option>
+            <option value="QA / Test Engineer">QA / Test Engineer</option>
+            <option value="General Application">General Application</option>
+          </select>
+
+          <label for="applyMessage" class="sr-only">Tell us about yourself</label>
+          <textarea id="applyMessage" name="message" placeholder="Tell us about yourself — what you've built, your experience, and what excites you about Blackwall Studio..." required></textarea>
+
+          <label for="applyLinks" class="sr-only">Links (GitHub, portfolio, etc.)</label>
+          <input id="applyLinks" name="links" type="text" placeholder="Links — GitHub, portfolio, mods (optional)" />
+
+          <button type="submit" class="btn-primary" style="align-self: flex-start;">
+            Send Application →
+          </button>
+          <p class="form-note">
+            Or email us directly at <a href="mailto:hello@blackwallstudio.dpdns.org">hello@blackwallstudio.dpdns.org</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <!-- ======== CONTACT ======== -->
   <section id="contact">
     <div class="container">
@@ -1458,7 +1721,7 @@
             </a>
           </div>
         </div>
-        <form class="contact-form reveal reveal-delay-2" id="contactForm" action="https://formspree.io/f/your-form-id" method="POST">
+        <form class="contact-form reveal reveal-delay-2" id="contactForm">
           <label for="contactName" class="sr-only">Your Name</label>
           <input id="contactName" name="name" type="text" placeholder="Your Name" required />
           <label for="contactEmail" class="sr-only">Your Email</label>
@@ -1493,11 +1756,46 @@
         <a href="#tools">Tools</a>
         <a href="#projects">Projects</a>
         <a href="#team">Team</a>
+        <a href="#careers">Careers</a>
       </div>
     </div>
   </footer>
 
   <!-- ======== THREE.JS ======== -->
+  <script>
+    // --- Form submission handler (mailto fallback) ---
+    function handleFormSubmit(form, subjectPrefix) {
+      const data = new FormData(form);
+      const parts = [];
+      let subject = '';
+      for (const [key, value] of data.entries()) {
+        if (!value) continue;
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
+        if (key === 'email' || key === 'name') {
+          if (!subject && key === 'name') subject = value;
+          parts.push(label + ': ' + value);
+        } else {
+          parts.push(label + ': ' + value);
+        }
+      }
+      const body = parts.join('\n');
+      const mailto = 'mailto:hello@blackwallstudio.dpdns.org?subject=' +
+        encodeURIComponent(subjectPrefix + (subject ? ' - ' + subject : '')) +
+        '&body=' + encodeURIComponent(body);
+      window.location.href = mailto;
+      return false;
+    }
+
+    document.getElementById('applyForm')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleFormSubmit(this, 'Application');
+    });
+
+    document.getElementById('contactForm')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      handleFormSubmit(this, 'Contact');
+    });
+  </script>
   <script type="importmap">
   {
     "imports": {
