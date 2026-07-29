@@ -332,6 +332,30 @@
       background-clip: text;
     }
 
+    .hero-type-wrap {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: rgba(255,255,255,0.45);
+      margin: 1rem auto 0.25rem;
+      font-weight: 400;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+    .hero-type {
+      color: #00f0ff;
+      font-weight: 500;
+    }
+    .hero-type-cursor {
+      display: inline-block;
+      color: #00f0ff;
+      font-weight: 300;
+      animation: blink 0.7s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     .hero-sub {
       font-size: clamp(1rem, 2vw, 1.3rem);
       color: rgba(255,255,255,0.5);
@@ -1300,6 +1324,59 @@
     .footer-links a:hover { color: #00f0ff; }
 
     /* ============================================
+       RELEASE TOOLTIP
+    ============================================ */
+    #releaseTooltip {
+      position: fixed;
+      z-index: 200;
+      width: 200px;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0,240,255,0.12);
+      border-radius: 12px;
+      padding: 1rem;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: auto;
+    }
+    #releaseTooltip .tip-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    #releaseTooltip .tip-date {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.6rem;
+    }
+    #releaseTooltip .tip-dl,
+    #releaseTooltip .tip-details {
+      display: block;
+      font-size: 0.75rem;
+      text-decoration: none;
+      padding: 0.35rem 0;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+    #releaseTooltip .tip-dl { color: #00f0ff; }
+    #releaseTooltip .tip-dl:hover { color: #66f5ff; }
+    #releaseTooltip .tip-details { color: rgba(255,255,255,0.4); }
+    #releaseTooltip .tip-details:hover { color: #fff; }
+
+    [data-theme="light"] #releaseTooltip {
+      background: rgba(245,245,247,0.95);
+      border-color: rgba(0,0,0,0.08);
+    }
+    [data-theme="light"] #releaseTooltip .tip-name { color: #1a1a2e; }
+    [data-theme="light"] #releaseTooltip .tip-date { color: rgba(0,0,0,0.4); }
+    [data-theme="light"] #releaseTooltip .tip-dl { color: #0066cc; }
+    [data-theme="light"] #releaseTooltip .tip-dl:hover { color: #004499; }
+    [data-theme="light"] #releaseTooltip .tip-details { color: rgba(0,0,0,0.35); }
+    [data-theme="light"] #releaseTooltip .tip-details:hover { color: #1a1a2e; }
+
+    /* ============================================
        UTILITY (accessibility, form notes)
     ============================================ */
     .sr-only {
@@ -1362,6 +1439,9 @@
       color: #1a1a2e;
     }
     [data-theme="light"] .hero h1 { color: #1a1a2e; }
+    [data-theme="light"] .hero-type-wrap { color: rgba(0,0,0,0.4); }
+    [data-theme="light"] .hero-type,
+    [data-theme="light"] .hero-type-cursor { color: #0066cc; }
     [data-theme="light"] .hero-sub { color: rgba(0,0,0,0.5); }
     [data-theme="light"] .hero-badge {
       border-color: rgba(0, 100, 200, 0.2);
@@ -1566,6 +1646,9 @@
       Extending the<br />
       <span class="gradient">Lives of Games</span>
     </h1>
+    <p class="hero-type-wrap">
+      We build <span class="hero-type" id="heroType"></span><span class="hero-type-cursor">|</span>
+    </p>
     <p class="hero-sub">
       Blackwall Studio is a multiplayer game development studio on a mission to
       breathe new life into beloved titles — bringing rich, competitive, and
@@ -2284,9 +2367,12 @@
     // --- MOUSE TRACKING ---
     let mouseX = 0;
     let mouseY = 0;
+    let mouseNDC = { x: 0, y: 0 };
     document.addEventListener('mousemove', (e) => {
       mouseX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+      mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
     });
 
     // --- RESIZE ---
@@ -2333,6 +2419,61 @@
     });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+    // Extend theme observer to also update glow
+    const origApply = applyThemeToScene;
+    applyThemeToScene = function(theme) {
+      origApply(theme);
+      updateGlowTheme(theme);
+    };
+
+    // --- MOUSE GLOW SPRITE ---
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = 128;
+    glowCanvas.height = 128;
+    const gctx = glowCanvas.getContext('2d');
+    const gradient = gctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gradient.addColorStop(0, 'rgba(0,240,255,0.6)');
+    gradient.addColorStop(0.3, 'rgba(0,240,255,0.2)');
+    gradient.addColorStop(1, 'rgba(0,240,255,0)');
+    gctx.fillStyle = gradient;
+    gctx.fillRect(0, 0, 128, 128);
+    const glowTexture = new THREE.CanvasTexture(glowCanvas);
+    const glowMaterial = new THREE.SpriteMaterial({
+      map: glowTexture,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+    });
+    const glowSprite = new THREE.Sprite(glowMaterial);
+    glowSprite.scale.set(12, 12, 1);
+    scene.add(glowSprite);
+
+    // Theme-aware glow color
+    function updateGlowTheme(theme) {
+      const light = theme === 'light';
+      const g2 = document.createElement('canvas');
+      g2.width = 128;
+      g2.height = 128;
+      const c2 = g2.getContext('2d');
+      const grd = c2.createRadialGradient(64, 64, 0, 64, 64, 64);
+      if (light) {
+        grd.addColorStop(0, 'rgba(45,45,74,0.4)');
+        grd.addColorStop(0.3, 'rgba(45,45,74,0.12)');
+        grd.addColorStop(1, 'rgba(45,45,74,0)');
+        glowMaterial.opacity = 0.35;
+      } else {
+        grd.addColorStop(0, 'rgba(0,240,255,0.6)');
+        grd.addColorStop(0.3, 'rgba(0,240,255,0.2)');
+        grd.addColorStop(1, 'rgba(0,240,255,0)');
+        glowMaterial.opacity = 0.5;
+      }
+      c2.fillStyle = grd;
+      c2.fillRect(0, 0, 128, 128);
+      glowTexture.image = g2;
+      glowTexture.needsUpdate = true;
+    }
+
     // --- ANIMATION LOOP ---
     const clock = new THREE.Clock();
 
@@ -2369,6 +2510,12 @@
       camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
       camera.lookAt(0, 0, 0);
 
+      // Mouse glow follows cursor in 3D space
+      const glowZ = 15;
+      glowSprite.position.x = mouseNDC.x * 18;
+      glowSprite.position.y = mouseNDC.y * 10 + scrollOffset * 0.3;
+      glowSprite.position.z = glowZ;
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
@@ -2384,6 +2531,171 @@
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       window.__scrollRatio = maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0;
     }, { passive: true });
+
+    // --- Typewriter effect ---
+    (function() {
+      const el = document.getElementById('heroType');
+      if (!el) return;
+      const words = ['netcode', 'mods', 'servers', 'preservation'];
+      let wordIdx = 0;
+      let charIdx = 0;
+      let deleting = false;
+      let timer = null;
+
+      function tick() {
+        const word = words[wordIdx];
+        if (deleting) {
+          el.textContent = word.substring(0, charIdx - 1);
+          charIdx--;
+        } else {
+          el.textContent = word.substring(0, charIdx + 1);
+          charIdx++;
+        }
+
+        if (!deleting && charIdx === word.length) {
+          deleting = true;
+          timer = setTimeout(tick, 1800);
+          return;
+        }
+        if (deleting && charIdx === 0) {
+          deleting = false;
+          wordIdx = (wordIdx + 1) % words.length;
+          timer = setTimeout(tick, 300);
+          return;
+        }
+        timer = setTimeout(tick, deleting ? 50 : 100);
+      }
+
+      tick();
+    })();
+
+    // --- Scroll-to-top button ---
+    (function() {
+      const btn = document.createElement('button');
+      btn.id = 'scrollTopBtn';
+      btn.setAttribute('aria-label', 'Scroll to top');
+      btn.innerHTML = '↑';
+      document.body.appendChild(btn);
+
+      // Style inline so it works immediately
+      Object.assign(btn.style, {
+        position: 'fixed',
+        bottom: '2rem',
+        right: '2rem',
+        zIndex: '99',
+        width: '44px',
+        height: '44px',
+        borderRadius: '12px',
+        border: '1px solid rgba(0,240,255,0.15)',
+        background: 'rgba(10,10,15,0.7)',
+        backdropFilter: 'blur(10px)',
+        color: '#00f0ff',
+        fontSize: '1.3rem',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: '0',
+        transform: 'translateY(20px)',
+        transition: 'opacity 0.3s ease, transform 0.3s ease, background 0.3s ease',
+        pointerEvents: 'none',
+      });
+
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      let visible = false;
+      window.addEventListener('scroll', () => {
+        const shouldShow = window.scrollY > 600;
+        if (shouldShow !== visible) {
+          visible = shouldShow;
+          btn.style.opacity = visible ? '1' : '0';
+          btn.style.transform = visible ? 'translateY(0)' : 'translateY(20px)';
+          btn.style.pointerEvents = visible ? 'auto' : 'none';
+        }
+      }, { passive: true });
+
+      // Theme-aware hover
+      btn.addEventListener('mouseenter', () => {
+        btn.style.background = 'rgba(0,240,255,0.12)';
+        btn.style.borderColor = 'rgba(0,240,255,0.3)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.background = 'rgba(10,10,15,0.7)';
+        btn.style.borderColor = 'rgba(0,240,255,0.15)';
+      });
+
+      // Initial theme
+      const initialTheme = document.documentElement.getAttribute('data-theme');
+      if (initialTheme === 'light') {
+        btn.style.background = 'rgba(245,245,247,0.85)';
+        btn.style.color = '#0066cc';
+        btn.style.borderColor = 'rgba(0,0,0,0.1)';
+      }
+
+      // Light mode adjustments
+      const observer = new MutationObserver(() => {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'light') {
+          btn.style.background = 'rgba(245,245,247,0.85)';
+          btn.style.color = '#0066cc';
+          btn.style.borderColor = 'rgba(0,0,0,0.1)';
+        } else {
+          btn.style.background = 'rgba(10,10,15,0.7)';
+          btn.style.color = '#00f0ff';
+          btn.style.borderColor = 'rgba(0,240,255,0.15)';
+        }
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    })();
+
+    // --- Release tooltip show/hide ---
+    function escH(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    let tooltipEl = null;
+    function showReleaseTooltip() {
+      const release = window.__latestRelease;
+      if (!release) return;
+      if (tooltipEl) tooltipEl.remove();
+
+      const date = release.published_at
+        ? new Date(release.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+        : '';
+      const dlUrl = release.assets?.length > 0
+        ? release.assets[0].browser_download_url
+        : release.zipball_url;
+
+      tooltipEl = document.createElement('div');
+      tooltipEl.id = 'releaseTooltip';
+      tooltipEl.innerHTML = `
+        <div class="tip-name">${escH(release.name || release.tag_name)}</div>
+        <div class="tip-date">${date}</div>
+        <a href="${escH(dlUrl)}" target="_blank" rel="noopener" class="tip-dl">⬇ Download</a>
+        <a href="https://github.com/Blackwall-Studio/RedSync-Public/releases/tag/${escH(release.tag_name)}" target="_blank" rel="noopener" class="tip-details">Details →</a>
+      `;
+
+      const badge = document.getElementById('heroVersionBadge');
+      badge.parentNode.appendChild(tooltipEl);
+
+      // Position tooltip
+      const badgeRect = badge.getBoundingClientRect();
+      tooltipEl.style.left = Math.max(10, Math.min(badgeRect.left + badgeRect.width / 2 - 100, window.innerWidth - 210)) + 'px';
+      tooltipEl.style.top = (badgeRect.bottom + 8 + window.scrollY) + 'px';
+
+      // Fade in
+      requestAnimationFrame(() => { tooltipEl.style.opacity = '1'; tooltipEl.style.transform = 'translateY(0)'; });
+    }
+
+    function hideReleaseTooltip() {
+      if (tooltipEl) {
+        tooltipEl.style.opacity = '0';
+        tooltipEl.style.transform = 'translateY(4px)';
+        setTimeout(() => { if (tooltipEl) { tooltipEl.remove(); tooltipEl = null; } }, 200);
+      }
+    }
 
     // --- Mobile Nav ---
     const toggle = document.getElementById('mobileToggle');
@@ -2457,11 +2769,19 @@
         .then(data => {
           if (!Array.isArray(data) || data.length === 0) throw new Error();
 
-          // --- Nav badge: latest version ---
+          // --- Hero badge: latest version ---
           const latest = data[0];
           if (heroBadge && heroText) {
             heroText.textContent = latest.tag_name || 'v0.0.0';
             heroBadge.classList.add('ready');
+          }
+
+          // Store release data for tooltip
+          window.__latestRelease = latest;
+          const heroBadgeEl = document.getElementById('heroVersionBadge');
+          if (heroBadgeEl) {
+            heroBadgeEl.addEventListener('mouseenter', showReleaseTooltip);
+            heroBadgeEl.addEventListener('mouseleave', hideReleaseTooltip);
           }
 
           // --- Release list: up to 3 releases ---
