@@ -218,6 +218,35 @@
     }
     .nav-cta::after { display: none !important; }
 
+    .theme-toggle {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: border-color 0.3s ease, background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .theme-toggle:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.05);
+    }
+    .theme-toggle-icon {
+      display: inline-block;
+      transition: transform 0.4s ease;
+    }
+    [data-theme="light"] .theme-toggle {
+      border-color: rgba(0,0,0,0.12);
+    }
+    [data-theme="light"] .theme-toggle:hover {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.2);
+    }
+
     .mobile-toggle {
       display: none;
       flex-direction: column;
@@ -1314,6 +1343,135 @@
     .reveal-delay-4 { transition-delay: 0.4s; }
 
     /* ============================================
+       LIGHT MODE OVERRIDES
+    ============================================ */
+    [data-theme="light"] html { background: #f5f5f7; }
+    html[data-theme="light"] body {
+      background: #f5f5f7;
+      color: #1a1a2e;
+    }
+    [data-theme="light"] .scene-overlay {
+      opacity: 0.12;
+    }
+    [data-theme="light"] nav.scrolled {
+      background: rgba(245, 245, 247, 0.9);
+      border-bottom-color: rgba(0,0,0,0.06);
+    }
+    [data-theme="light"] .hero h1 { color: #1a1a2e; }
+    [data-theme="light"] .hero-sub { color: rgba(0,0,0,0.5); }
+    [data-theme="light"] .hero-badge {
+      border-color: rgba(0, 100, 200, 0.2);
+      background: rgba(0, 100, 200, 0.05);
+      color: #0066cc;
+    }
+    [data-theme="light"] .hero-badge .dot { background: #0066cc; }
+    [data-theme="light"] .section-label { color: #0066cc; }
+    [data-theme="light"] .section-label::before { background: #0066cc; }
+    [data-theme="light"] .section-title { color: #1a1a2e; }
+    [data-theme="light"] .section-desc { color: rgba(0,0,0,0.5); }
+    [data-theme="light"] .service-card,
+    [data-theme="light"] .role-card,
+    [data-theme="light"] .stat-card,
+    [data-theme="light"] .project-card,
+    [data-theme="light"] .team-card,
+    [data-theme="light"] .blog-card,
+    [data-theme="light"] .release-item,
+    [data-theme="light"] .careers-cta {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(0,0,0,0.08);
+    }
+    [data-theme="light"] .service-card:hover,
+    [data-theme="light"] .role-card:hover,
+    [data-theme="light"] .project-card:hover,
+    [data-theme="light"] .blog-card:hover {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(0, 100, 200, 0.2);
+    }
+    [data-theme="light"] .service-card h3,
+    [data-theme="light"] .role-card h3,
+    [data-theme="light"] .stat-number,
+    [data-theme="light"] .project-info h3,
+    [data-theme="light"] .team-card h3,
+    [data-theme="light"] .blog-card h3,
+    [data-theme="light"] .careers-cta-content h3 { color: #1a1a2e; }
+    [data-theme="light"] .service-card p,
+    [data-theme="light"] .role-desc,
+    [data-theme="light"] .project-info p,
+    [data-theme="light"] .team-card p,
+    [data-theme="light"] .blog-card p.blog-card-excerpt,
+    [data-theme="light"] .stat-label,
+    [data-theme="light"] .release-item-meta,
+    [data-theme="light"] .careers-cta-content p { color: rgba(0,0,0,0.55); }
+    [data-theme="light"] .blog-card-meta { color: rgba(0,0,0,0.35); }
+    [data-theme="light"] .blog-card-author { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .release-loading { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .release-item .btn-tiny { color: rgba(0,0,0,0.6); border-color: rgba(0,0,0,0.1); }
+    [data-theme="light"] .release-item .btn-tiny:hover { color: #0066cc; border-color: rgba(0,100,200,0.2); }
+    [data-theme="light"] .tool-note { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .service-icon,
+    [data-theme="light"] .role-icon,
+    [data-theme="light"] .blog-card-thumb { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+    [data-theme="light"] .project-tag { background: rgba(0, 100, 200, 0.08); color: #0066cc; }
+    [data-theme="light"] .team-avatar { border-color: rgba(0, 100, 200, 0.2); background: #e8e8f0; }
+    [data-theme="light"] .team-avatar { color: #0066cc; }
+    [data-theme="light"] .team-card .role { color: #0066cc; }
+    [data-theme="light"] .about-text p { color: rgba(0,0,0,0.55); }
+    [data-theme="light"] .about-text p strong { color: #1a1a2e; }
+    [data-theme="light"] .nav-links a { color: rgba(0,0,0,0.55); }
+    [data-theme="light"] .nav-links a:hover { color: #1a1a2e; }
+    [data-theme="light"] .nav-links a::after { background: #0066cc; }
+    [data-theme="light"] .contact-link { color: rgba(0,0,0,0.55); }
+    [data-theme="light"] .contact-link:hover { color: #0066cc; }
+    [data-theme="light"] .contact-link .icon { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+    [data-theme="light"] .footer-brand { color: rgba(0,0,0,0.35); }
+    [data-theme="light"] .footer-links a { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .footer-links a:hover { color: #0066cc; }
+    [data-theme="light"] .form-note,
+    [data-theme="light"] .form-note a { color: rgba(0,0,0,0.4); }
+    [data-theme="light"] .form-note a { color: #0066cc; }
+    [data-theme="light"] .nav-version-badge { color: #0066cc; border-color: rgba(0,100,200,0.15); background: rgba(0,100,200,0.06); }
+    [data-theme="light"] .nav-version-badge .dot { background: #0066cc; }
+    [data-theme="light"] .apply-form input,
+    [data-theme="light"] .apply-form select,
+    [data-theme="light"] .apply-form textarea,
+    [data-theme="light"] .contact-form input,
+    [data-theme="light"] .contact-form textarea {
+      background: rgba(255,255,255,0.8);
+      border-color: rgba(0,0,0,0.1);
+      color: #1a1a2e;
+    }
+    [data-theme="light"] .apply-form input::placeholder,
+    [data-theme="light"] .apply-form textarea::placeholder,
+    [data-theme="light"] .contact-form input::placeholder,
+    [data-theme="light"] .contact-form textarea::placeholder { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .apply-form select { color: rgba(0,0,0,0.5); }
+    [data-theme="light"] .apply-form select:valid { color: #1a1a2e; }
+    [data-theme="light"] .apply-form select option { background: #f5f5f7; color: #1a1a2e; }
+    [data-theme="light"] .btn-secondary {
+      color: #1a1a2e;
+      border-color: rgba(0,0,0,0.15);
+    }
+    [data-theme="light"] .btn-secondary:hover {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.25);
+    }
+    [data-theme="light"] .project-image .project-logo-overlay {
+      background: rgba(245,245,247,0.7);
+      border-color: rgba(0,100,200,0.15);
+    }
+    [data-theme="light"] .release-item .btn-tiny {
+      color: rgba(0,0,0,0.55);
+      border-color: rgba(0,0,0,0.1);
+    }
+    [data-theme="light"] .release-item .btn-tiny:hover {
+      color: #0066cc;
+      border-color: rgba(0,100,200,0.2);
+    }
+    [data-theme="light"] footer {
+      border-top-color: rgba(0,0,0,0.04);
+    }
+
+    /* ============================================
        RESPONSIVE
     ============================================ */
     @media (max-width: 1024px) {
@@ -1386,6 +1544,9 @@
       <li><a href="#careers">Careers</a></li>
       <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
     </ul>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle light/dark mode">
+      <span class="theme-toggle-icon">☀️</span>
+    </button>
     <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
       <span></span><span></span><span></span>
     </button>
@@ -1919,65 +2080,66 @@
   </script>
 
   <script>
-    // --- Blog posts data ---
-    const blogPosts = [
-      {
-        date: 'Jul 28, 2026',
-        category: 'Studio Update',
-        title: 'Blackwall Studio Is Live',
-        excerpt: 'We are officially launching Blackwall Studio — a multiplayer game development studio dedicated to extending the lives of games. Our first release: the full studio website and a new org profile on GitHub. RedSync development continues at full speed.',
-        author: 'Matthew Goodwin',
-        icon: '🎉'
-      },
-      {
-        date: 'Jul 26, 2026',
-        category: 'Release',
-        title: 'RedSync v1.0.13 — New Events & Stability',
-        excerpt: 'RedSync 1.0.13 is out with new proximity voice chat improvements, Project Smasher combat event refinements, and dedicated server stability patches. The anti-regression watchdog now auto-rolls back bad updates before players are affected.',
-        author: 'Matthew Goodwin',
-        icon: '🔴'
-      },
-      {
-        date: 'Jul 20, 2026',
-        category: 'Tooling',
-        title: 'Council & Synapse Tools Released as Open Source',
-        excerpt: 'We have open-sourced two internal tools: Council, a multi-model AI deliberation engine, and Synapse, a reverse engineering workbench with HexStrike AI. Both are available now on our GitHub under the MIT license.',
-        author: 'Anthony Wells',
-        icon: '🛠'
-      },
-      {
-        date: 'Jun 15, 2026',
-        category: 'Dev Diary',
-        title: 'Inside the Netcode: Building RedSync from Scratch',
-        excerpt: 'A deep dive into how we built RedSync\'s networking layer from the ground up — from reverse engineering Cyberpunk 2077\'s game state to building a custom C++ synchronization core with GameNetworkingSockets.',
-        author: 'Matthew Goodwin',
-        icon: '🔌'
-      }
-    ];
-
-    function renderBlog() {
+    // --- Blog: fetch from JSON file ---
+    async function loadBlog() {
       const grid = document.getElementById('blogGrid');
       if (!grid) return;
-      grid.innerHTML = blogPosts.map((post, i) => `
-        <article class="blog-card reveal reveal-delay-${Math.min(i, 4)}">
-          <div class="blog-card-thumb">${post.icon}</div>
-          <div class="blog-card-body">
-            <div class="blog-card-meta">
-              <span class="blog-card-category">${post.category}</span>
-              <span>${post.date}</span>
+      try {
+        const res = await fetch('blog-posts.json?t=' + Date.now());
+        const posts = await res.json();
+        grid.innerHTML = posts.map((post, i) => `
+          <article class="blog-card reveal reveal-delay-${Math.min(i, 4)}">
+            <div class="blog-card-thumb">${post.icon}</div>
+            <div class="blog-card-body">
+              <div class="blog-card-meta">
+                <span class="blog-card-category">${post.category}</span>
+                <span>${post.date}</span>
+              </div>
+              <h3>${post.title}</h3>
+              <p class="blog-card-excerpt">${post.excerpt}</p>
+              <div class="blog-card-author">
+                <span class="blog-card-author-avatar">${post.author.split(' ').map(w => w[0]).join('')}</span>
+                ${post.author}
+              </div>
             </div>
-            <h3>${post.title}</h3>
-            <p class="blog-card-excerpt">${post.excerpt}</p>
-            <div class="blog-card-author">
-              <span class="blog-card-author-avatar">${post.author.split(' ').map(w => w[0]).join('')}</span>
-              ${post.author}
-            </div>
-          </div>
-        </article>
-      `).join('');
+          </article>
+        `).join('');
+      } catch (e) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);padding:1rem;">Could not load blog posts.</p>';
+      }
+      // Observe new reveal elements (loaded async after observer was created)
+      requestAnimationFrame(() => {
+        grid.querySelectorAll('.reveal').forEach(el => {
+          const ob = window.__revealObserver;
+          if (ob) ob.observe(el);
+        });
+      });
     }
+    loadBlog();
 
-    renderBlog();
+    // --- Theme toggle ---
+    const savedTheme = localStorage.getItem('bw-theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const isLightMode = savedTheme === 'light' || (!savedTheme && prefersLight);
+    if (isLightMode) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+    // Set initial icon
+    document.querySelector('.theme-toggle-icon').textContent = isLightMode ? '🌙' : '☀️';
+
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      if (current === 'light') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('bw-theme', 'dark');
+      } else {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('bw-theme', 'light');
+      }
+      this.querySelector('.theme-toggle-icon').textContent =
+        html.getAttribute('data-theme') === 'light' ? '🌙' : '☀️';
+    });
   </script>
   <script type="importmap">
   {
@@ -2187,6 +2349,7 @@
     });
 
     revealEls.forEach(el => revealObserver.observe(el));
+    window.__revealObserver = revealObserver;
 
     // --- Contact form ---
     const form = document.getElementById('contactForm');

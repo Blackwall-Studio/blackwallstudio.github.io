@@ -1,0 +1,42 @@
+[
+  {
+    "date": "Aug 1, 2026",
+    "category": "Release",
+    "title": "RedSync v1.0.14 — Proximity Voice Chat & Stability Overhaul",
+    "excerpt": "RedSync 1.0.14 is here with a major proximity voice chat overhaul, improved server stability under high player counts, and a new auto-healing watchdog that detects and restarts hung game sessions without player interruption.",
+    "author": "Matthew Goodwin",
+    "icon": "🔴"
+  },
+  {
+    "date": "Jul 28, 2026",
+    "category": "Studio Update",
+    "title": "Blackwall Studio Is Live",
+    "excerpt": "We are officially launching Blackwall Studio — a multiplayer game development studio dedicated to extending the lives of games. Our first release: the full studio website and a new org profile on GitHub. RedSync development continues at full speed.",
+    "author": "Matthew Goodwin",
+    "icon": "🎉"
+  },
+  {
+    "date": "Jul 26, 2026",
+    "category": "Release",
+    "title": "RedSync v1.0.13 — New Events & Stability",
+    "excerpt": "RedSync 1.0.13 is out with new proximity voice chat improvements, Project Smasher combat event refinements, and dedicated server stability patches. The anti-regression watchdog now auto-rolls back bad updates before players are affected.",
+    "author": "Matthew Goodwin",
+    "icon": "🔴"
+  },
+  {
+    "date": "Jul 20, 2026",
+    "category": "Tooling",
+    "title": "Council & Synapse Tools Released as Open Source",
+    "excerpt": "We have open-sourced two internal tools: Council, a multi-model AI deliberation engine, and Synapse, a reverse engineering workbench with HexStrike AI. Both are available now on our GitHub under the MIT license.",
+    "author": "Anthony Wells",
+    "icon": "🛠"
+  },
+  {
+    "date": "Jun 15, 2026",
+    "category": "Dev Diary",
+    "title": "Inside the Netcode: Building RedSync from Scratch",
+    "excerpt": "A deep dive into how we built RedSync's networking layer from the ground up — from reverse engineering Cyberpunk 2077's game state to building a custom C++ synchronization core with GameNetworkingSockets.",
+    "author": "Matthew Goodwin",
+    "icon": "🔌"
+  }
+]
