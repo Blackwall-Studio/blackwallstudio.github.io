@@ -2574,10 +2574,23 @@
         <button class="blog-filter" data-cat="Release">Releases</button>
         <button class="blog-filter" data-cat="Dev Diary">Dev Diaries</button>
         <button class="blog-filter" data-cat="Tooling">Tooling</button>
+        <span style="display:inline-flex;align-items:center;gap:0.4rem;padding:0 0.5rem;color:rgba(255,255,255,0.12);font-size:0.75rem;">|</span>
+        <button class="blog-filter" data-author="all" style="display:none;"></button>
+        <button class="blog-filter" data-author="Matthew Goodwin">Matthew</button>
+        <button class="blog-filter" data-author="Anthony Wells">Anthony</button>
         <div class="blog-filter-indicator" id="blogFilterIndicator"></div>
       </div>
       <div class="blog-grid" id="blogGrid" data-category="all">
         <!-- Rendered by JS -->
+      </div>
+      <div class="container" style="margin-top:2.5rem;" id="blogArchive">
+        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" id="archiveToggle">
+          <span style="font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase;">📚 Blog Archive</span>
+          <span id="archiveArrow" style="font-size:0.8rem;color:rgba(255,255,255,0.3);transition:transform 0.3s ease;">▸</span>
+        </div>
+        <div id="archiveBody" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease, opacity 0.3s ease;opacity:0;">
+          <!-- Rendered by JS -->
+        </div>
       </div>
     </div>
   </section>
@@ -2839,6 +2852,7 @@
     // --- Blog with category filters ---
     let blogPosts = [];
     let blogFilter = 'all';
+    let blogAuthorFilter = 'all';
 
     async function loadBlog() {
       const grid = document.getElementById('blogGrid');
@@ -2847,15 +2861,40 @@
         const res = await fetch('blog-posts.json?t=' + Date.now());
         blogPosts = await res.json();
         renderBlog(grid);
+        renderArchive();
       } catch (e) {
         grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);padding:1.5rem;">Could not load blog posts.</p>';
       }
     }
 
+    function calcReadTime(excerpt) {
+      const words = excerpt.split(/\s+/).length;
+      const min = Math.max(1, Math.round(words / 200));
+      return min + ' min read';
+    }
+
     function activateBlogFilter(cat) {
       blogFilter = cat;
+      blogAuthorFilter = 'all';
       document.querySelectorAll('.blog-filter').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+      document.querySelectorAll('.blog-filter[data-author]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      slideFilterIndicator();
+      const grid = document.getElementById('blogGrid');
+      if (grid) renderBlog(grid);
+    }
+
+    function activateAuthorFilter(author) {
+      blogAuthorFilter = author;
+      blogFilter = 'all';
+      document.querySelectorAll('.blog-filter[data-author]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.author === author);
+      });
+      document.querySelectorAll('.blog-filter[data-cat]').forEach(btn => {
+        btn.classList.remove('active');
       });
       slideFilterIndicator();
       const grid = document.getElementById('blogGrid');
@@ -2875,9 +2914,13 @@
     }
 
     function renderBlog(grid) {
-      const filtered = blogFilter === 'all'
+      let filtered = blogFilter === 'all'
         ? blogPosts
         : blogPosts.filter(p => p.category === blogFilter);
+
+      if (blogAuthorFilter !== 'all') {
+        filtered = filtered.filter(p => p.author === blogAuthorFilter);
+      }
 
       grid.innerHTML = filtered.length
         ? filtered.map((post, i) => `
@@ -2887,6 +2930,7 @@
               <div class="blog-card-meta">
                 <span class="blog-card-category">${post.category}</span>
                 <span>${post.date}</span>
+                <span style="color:rgba(255,255,255,0.2);font-size:0.7rem;">${calcReadTime(post.excerpt)}</span>
               </div>
               <h3>${post.title}</h3>
               <p class="blog-card-excerpt">${post.excerpt}</p>
@@ -2897,9 +2941,8 @@
             </div>
           </article>
         `).join('')
-        : '<p style="color:rgba(255,255,255,0.3);padding:1.5rem 0;">No posts in this category yet.</p>';
+        : '<p style="color:rgba(255,255,255,0.3);padding:1.5rem 0;">No posts matching this filter.</p>';
 
-      // Observe new reveal elements
       requestAnimationFrame(() => {
         grid.querySelectorAll('.reveal').forEach(el => {
           const ob = window.__revealObserver;
@@ -2908,10 +2951,55 @@
       });
     }
 
+    function renderArchive() {
+      const body = document.getElementById('archiveBody');
+      if (!body) return;
+      const cats = ['Studio Update', 'Release', 'Dev Diary', 'Tooling'];
+      let html = '';
+      cats.forEach(cat => {
+        const posts = blogPosts.filter(p => p.category === cat);
+        if (!posts.length) return;
+        html += `<div style="margin-top:1.2rem;">
+          <div style="font-size:0.75rem;font-weight:600;color:#7c3aed;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.6rem;">${cat} (${posts.length})</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            ${posts.map(p => `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.4rem 0.6rem;border-radius:8px;transition:background 0.2s;cursor:default;">
+              <span style="font-size:0.85rem;">${p.icon}</span>
+              <span style="font-size:0.8rem;color:rgba(255,255,255,0.6);min-width:80px;">${p.date}</span>
+              <span style="font-size:0.85rem;color:#fff;flex:1;">${p.title}</span>
+              <span style="font-size:0.65rem;color:rgba(255,255,255,0.25);">${p.author}</span>
+            </div>`).join('')}
+          </div>
+        </div>`;
+      });
+      body.innerHTML = html || '<p style="color:rgba(255,255,255,0.2);font-size:0.85rem;">No posts yet.</p>';
+    }
+
     // Wire filter buttons
     document.querySelectorAll('.blog-filter').forEach(btn => {
-      btn.addEventListener('click', () => activateBlogFilter(btn.dataset.cat));
+      btn.addEventListener('click', () => {
+        if (btn.dataset.cat) activateBlogFilter(btn.dataset.cat);
+        if (btn.dataset.author) activateAuthorFilter(btn.dataset.author);
+      });
     });
+
+    // Archive toggle
+    const archiveToggle = document.getElementById('archiveToggle');
+    const archiveBody = document.getElementById('archiveBody');
+    const archiveArrow = document.getElementById('archiveArrow');
+    if (archiveToggle && archiveBody) {
+      archiveToggle.addEventListener('click', () => {
+        const open = archiveBody.style.maxHeight !== '0px' && archiveBody.style.maxHeight !== '';
+        if (open) {
+          archiveBody.style.maxHeight = '0px';
+          archiveBody.style.opacity = '0';
+          if (archiveArrow) archiveArrow.textContent = '▸';
+        } else {
+          archiveBody.style.maxHeight = archiveBody.scrollHeight + 'px';
+          archiveBody.style.opacity = '1';
+          if (archiveArrow) archiveArrow.textContent = '▾';
+        }
+      });
+    }
 
     loadBlog();
 
