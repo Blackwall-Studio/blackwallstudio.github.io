@@ -54,5 +54,13 @@
     "excerpt": "A behind-the-scenes look at how we built the Cyberpunk-inspired visual effects for blackwallstudio.com — CSS-only glitch text with stepped keyframe offsets, chromatic aberration on hover, CRT scan line overlays, and a breathing logo pulse. All in vanilla CSS, no JavaScript animation libraries.",
     "author": "Matthew Goodwin",
     "icon": "🎨"
+  },
+  {
+    "date": "Aug 5, 2026",
+    "category": "Dev Diary",
+    "title": "Building the 3D Magnetic Tilt System: Perspective Tracking Without a Library",
+    "excerpt": "How we added a perspective-based magnetic tilt effect to cards across the Blackwall Studio site using vanilla JS with requestAnimationFrame throttling. Each card independently rotates toward the cursor based on its bounding rect — no libraries, no dependencies, just 30 lines of code and a CSS transform-style.",
+    "author": "Matthew Goodwin",
+    "icon": "🧲"
   }
 ]
