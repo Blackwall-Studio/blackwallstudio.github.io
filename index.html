@@ -623,6 +623,10 @@
       margin-bottom: 1.5rem;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.03);
+      color: #00f0ff;
+    }
+    [data-theme="light"] .service-icon {
+      color: #0066cc;
     }
     .service-card h3 {
       font-size: 1.2rem;
@@ -1089,6 +1093,117 @@
       min-height: 110px;
       resize: vertical;
     }
+
+    /* ============================================
+       BLOG FILTERS
+    ============================================ */
+    .blog-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    .blog-filter {
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.8rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .blog-filter:hover {
+      border-color: rgba(124,58,237,0.2);
+      color: rgba(255,255,255,0.7);
+    }
+    .blog-filter.active {
+      background: rgba(124,58,237,0.1);
+      border-color: rgba(124,58,237,0.25);
+      color: #7c3aed;
+    }
+    [data-theme="light"] .blog-filter {
+      border-color: rgba(0,0,0,0.08);
+      color: rgba(0,0,0,0.45);
+    }
+    [data-theme="light"] .blog-filter:hover {
+      border-color: rgba(124,58,237,0.3);
+      color: rgba(0,0,0,0.7);
+    }
+    [data-theme="light"] .blog-filter.active {
+      background: rgba(124,58,237,0.08);
+      border-color: rgba(124,58,237,0.3);
+      color: #7c3aed;
+    }
+
+    /* ============================================
+       LEGAL PAGES (ToS, Privacy)
+    ============================================ */
+    .legal-page {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 1000;
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(24px);
+      overflow-y: auto;
+      padding: 6rem 2rem 4rem;
+    }
+    .legal-page.open { display: block; }
+    .legal-page .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .legal-page h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .legal-page .updated {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 2rem;
+    }
+    .legal-page h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #00f0ff;
+      margin: 1.5rem 0 0.5rem;
+    }
+    .legal-page p {
+      color: rgba(255,255,255,0.6);
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+    .legal-close {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(10,10,15,0.6);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      transition: background 0.3s ease;
+    }
+    .legal-close:hover { background: rgba(255,255,255,0.06); }
+
+    [data-theme="light"] .legal-page { background: rgba(245,245,247,0.97); }
+    [data-theme="light"] .legal-page h2 { color: #1a1a2e; }
+    [data-theme="light"] .legal-page .updated { color: rgba(0,0,0,0.3); }
+    [data-theme="light"] .legal-page h3 { color: #0066cc; }
+    [data-theme="light"] .legal-page p { color: rgba(0,0,0,0.55); }
+    [data-theme="light"] .legal-close { color: #1a1a2e; border-color: rgba(0,0,0,0.08); background: rgba(245,245,247,0.6); }
 
     /* ============================================
        BLOG / NEWS
@@ -1599,6 +1714,30 @@
 </head>
 <body>
 
+  <!-- ======== SPLASH LOADING SCREEN ======== -->
+  <div id="splashScreen" style="
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 9999; background: #0a0a0f;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 1s ease;
+  ">
+    <div style="
+      width: 56px; height: 56px; border-radius: 12px;
+      border: 2px solid #00f0ff; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+    ">
+      <img src="favicon.png" alt="" width="40" height="40" style="border-radius: 8px;" />
+    </div>
+    <div style="
+      width: 160px; height: 2px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;
+    ">
+      <div id="splashBar" style="
+        height: 100%; width: 0%; background: linear-gradient(90deg, #00f0ff, #0066ff);
+        border-radius: 2px; transition: width 0.4s ease;
+      "></div>
+    </div>
+  </div>
+
   <!-- ======== SKIP LINK ======== -->
   <a href="#about" class="skip-link">Skip to main content</a>
 
@@ -1793,7 +1932,15 @@
       </p>
       <div class="services-grid" style="margin-top: 3rem;">
         <div class="service-card reveal reveal-delay-1">
-          <div class="service-icon">🚀</div>
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+              <circle cx="12" cy="10" r="3"/>
+              <circle cx="12" cy="10" r="1" fill="currentColor"/>
+            </svg>
+          </div>
           <h3>RedSync Launcher</h3>
           <p>
             A full-featured desktop launcher for installing, updating, and connecting to
@@ -1810,7 +1957,16 @@
           </div>
         </div>
         <div class="service-card reveal reveal-delay-2">
-          <div class="service-icon">📡</div>
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+              <line x1="6" y1="6" x2="6.01" y2="6"/>
+              <line x1="6" y1="18" x2="6.01" y2="18"/>
+              <circle cx="10" cy="6" r="1" fill="currentColor"/>
+              <circle cx="10" cy="18" r="1" fill="currentColor"/>
+            </svg>
+          </div>
           <h3>RedSync Server</h3>
           <p>
             A dedicated .NET 9 game server with C++ networking core for low-latency player
@@ -1825,7 +1981,12 @@
           </div>
         </div>
         <div class="service-card reveal reveal-delay-3">
-          <div class="service-icon">🛡</div>
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
           <h3>Security &amp; Monitoring Suite</h3>
           <p>
             A collection of production tools for running game servers at scale: a real-time
@@ -1838,7 +1999,13 @@
           </div>
         </div>
         <div class="service-card reveal reveal-delay-1">
-          <div class="service-icon">🏛</div>
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <line x1="9" y1="10" x2="15" y2="10"/>
+              <line x1="12" y1="7" x2="12" y2="13"/>
+            </svg>
+          </div>
           <h3>Council</h3>
           <p>
             A multi-model AI deliberation engine featuring specialist LLM advisors, confidence-weighted
@@ -1853,6 +2020,13 @@
         </div>
         <div class="service-card reveal reveal-delay-2">
           <div class="service-icon">🔄</div>
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
           <h3>Synapse</h3>
           <p>
             A reverse engineering workbench and AI-powered research lab packaged as a FastAPI web
@@ -1907,7 +2081,17 @@
         <div class="project-card reveal reveal-delay-2">
           <div class="project-image" role="img" aria-label="Project Chimera multiplayer framework preview">
             <div class="overlay-glow"></div>
-            <span class="placeholder-icon" aria-hidden="true">🗺️</span>
+            <div style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+              <div style="text-align:center;">
+                <span class="placeholder-icon" aria-hidden="true" style="display:block;font-size:2.5rem;opacity:0.4;margin-bottom:0.75rem;">🗺️</span>
+                <span style="
+                  display:inline-block;padding:0.35rem 1rem;border-radius:100px;
+                  font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+                  color:#7c3aed;border:1px solid rgba(124,58,237,0.25);
+                  background:rgba(124,58,237,0.08);
+                ">Coming Soon</span>
+              </div>
+            </div>
           </div>
           <div class="project-info">
             <span class="project-tag">In Development</span>
@@ -1958,7 +2142,14 @@
         Dev diaries, release announcements, studio updates, and behind-the-scenes looks
         at what we're building.
       </p>
-      <div class="blog-grid" id="blogGrid">
+      <div class="blog-filters" id="blogFilters">
+        <button class="blog-filter active" data-cat="all">All</button>
+        <button class="blog-filter" data-cat="Studio Update">Studio</button>
+        <button class="blog-filter" data-cat="Release">Releases</button>
+        <button class="blog-filter" data-cat="Dev Diary">Dev Diaries</button>
+        <button class="blog-filter" data-cat="Tooling">Tooling</button>
+      </div>
+      <div class="blog-grid" id="blogGrid" data-category="all">
         <!-- Rendered by JS -->
       </div>
     </div>
@@ -2109,6 +2300,54 @@
     </div>
   </section>
 
+  <!-- ======== TERMS OF SERVICE PAGE ======== -->
+  <div class="legal-page" id="tosPage">
+    <button class="legal-close" onclick="closeLegalPage()">✕</button>
+    <div class="container">
+      <h2>Terms of Service</h2>
+      <p class="updated">Last updated: July 29, 2026</p>
+
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing or using Blackwall Studio's tools, software, or website, you agree to be bound by these Terms of Service. If you do not agree, do not use our services.</p>
+
+      <h3>2. Software License</h3>
+      <p>Our tools (RedSync, Council, Synapse) are provided under the terms of their respective open-source licenses. You may use, modify, and distribute them in accordance with those licenses. No proprietary rights are transferred.</p>
+
+      <h3>3. No Warranty</h3>
+      <p>All software and tools are provided "as is" without warranty of any kind, either express or implied. Use at your own risk. Blackwall Studio is not liable for any damages arising from the use of our software.</p>
+
+      <h3>4. User Conduct</h3>
+      <p>When using our multiplayer infrastructure, you agree not to: disrupt other players' experiences, reverse engineer beyond the scope of provided SDKs, or use our services for any illegal purpose.</p>
+
+      <h3>5. Changes</h3>
+      <p>We reserve the right to update these terms at any time. Continued use after changes constitutes acceptance of the new terms.</p>
+    </div>
+  </div>
+
+  <!-- ======== PRIVACY POLICY PAGE ======== -->
+  <div class="legal-page" id="privacyPage">
+    <button class="legal-close" onclick="closeLegalPage()">✕</button>
+    <div class="container">
+      <h2>Privacy Policy</h2>
+      <p class="updated">Last updated: July 29, 2026</p>
+
+      <h3>1. Information We Collect</h3>
+      <p>We collect minimal data necessary to operate our services: server connection logs (IP addresses, timestamps), crash reports submitted voluntarily, and email addresses provided via our contact form.</p>
+
+      <h3>2. How We Use It</h3>
+      <p>Server logs are used solely for operational monitoring and debugging. Email addresses are used only to respond to your inquiries. We never sell, share, or rent your personal information.</p>
+
+      <h3>3. Data Retention</h3>
+      <p>Server logs are retained for 30 days and automatically deleted. Contact form submissions are retained until the inquiry is resolved. You may request deletion at any time by emailing hello@blackwallstudio.dpdns.org.</p>
+
+      <h3>4. Third Parties</h3>
+      <p>Our website and tools may use third-party services (GitHub, Discord, Zoho Mail) that have their own privacy policies. We do not control those services.</p>
+
+      <h3>5. Contact</h3>
+      <p>For privacy-related questions, email hello@blackwallstudio.dpdns.org.</p>
+    </div>
+  </div>
+
   <!-- ======== FOOTER ======== -->
   <footer>
     <div class="footer-inner">
@@ -2126,6 +2365,8 @@
         <a href="#team">Team</a>
         <a href="#news">News</a>
         <a href="#careers">Careers</a>
+        <a href="#tos">Terms</a>
+        <a href="#privacy">Privacy</a>
       </div>
     </div>
   </footer>
@@ -2168,14 +2409,39 @@
 
   <script>
     // --- Blog: fetch from JSON file ---
+    // --- Blog with category filters ---
+    let blogPosts = [];
+    let blogFilter = 'all';
+
     async function loadBlog() {
       const grid = document.getElementById('blogGrid');
       if (!grid) return;
       try {
         const res = await fetch('blog-posts.json?t=' + Date.now());
-        const posts = await res.json();
-        grid.innerHTML = posts.map((post, i) => `
-          <article class="blog-card reveal reveal-delay-${Math.min(i, 4)}">
+        blogPosts = await res.json();
+        renderBlog(grid);
+      } catch (e) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);padding:1.5rem;">Could not load blog posts.</p>';
+      }
+    }
+
+    function activateBlogFilter(cat) {
+      blogFilter = cat;
+      document.querySelectorAll('.blog-filter').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+      const grid = document.getElementById('blogGrid');
+      if (grid) renderBlog(grid);
+    }
+
+    function renderBlog(grid) {
+      const filtered = blogFilter === 'all'
+        ? blogPosts
+        : blogPosts.filter(p => p.category === blogFilter);
+
+      grid.innerHTML = filtered.length
+        ? filtered.map((post, i) => `
+          <article class="blog-card reveal">
             <div class="blog-card-thumb">${post.icon}</div>
             <div class="blog-card-body">
               <div class="blog-card-meta">
@@ -2190,11 +2456,10 @@
               </div>
             </div>
           </article>
-        `).join('');
-      } catch (e) {
-        grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);padding:1rem;">Could not load blog posts.</p>';
-      }
-      // Observe new reveal elements (loaded async after observer was created)
+        `).join('')
+        : '<p style="color:rgba(255,255,255,0.3);padding:1.5rem 0;">No posts in this category yet.</p>';
+
+      // Observe new reveal elements
       requestAnimationFrame(() => {
         grid.querySelectorAll('.reveal').forEach(el => {
           const ob = window.__revealObserver;
@@ -2202,7 +2467,38 @@
         });
       });
     }
+
+    // Wire filter buttons
+    document.querySelectorAll('.blog-filter').forEach(btn => {
+      btn.addEventListener('click', () => activateBlogFilter(btn.dataset.cat));
+    });
+
     loadBlog();
+
+    // --- Hide splash screen after scene ready ---
+    // Use a small delay to let Three.js and typewriter settle, then fade splash
+    let splashHidden = false;
+    function hideSplash() {
+      if (splashHidden) return;
+      splashHidden = true;
+      // Fill bar then fade
+      const bar = document.getElementById('splashBar');
+      if (bar) {
+        bar.style.width = '100%';
+        setTimeout(() => {
+          const splash = document.getElementById('splashScreen');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => { splash.remove(); }, 1000);
+          }
+        }, 400);
+      } else {
+        const splash = document.getElementById('splashScreen');
+        if (splash) { splash.remove(); }
+      }
+    }
+    // Wait for Three.js module to initialize (module scripts are deferred)
+    setTimeout(hideSplash, 1800);
 
     // --- Theme toggle ---
     const savedTheme = localStorage.getItem('bw-theme');
@@ -2847,6 +3143,35 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       }
     })();
+
+    // --- Legal page navigation ---
+    function openLegalPage(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLegalPage() {
+      document.querySelectorAll('.legal-page.open').forEach(el => el.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+    // Close on overlay click
+    document.querySelectorAll('.legal-page').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target === el) closeLegalPage();
+      });
+    });
+    // Keyboard escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLegalPage();
+    });
+    // Wire footer links
+    document.querySelector('footer a[href="#tos"]')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLegalPage('tosPage');
+    });
+    document.querySelector('footer a[href="#privacy"]')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLegalPage('privacyPage');
+    });
   </script>
 
 </body>
