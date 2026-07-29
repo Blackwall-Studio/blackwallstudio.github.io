@@ -955,6 +955,59 @@
       color: #fff;
       margin-bottom: 0.5rem;
     }
+
+    /* ============================================
+       GLITCH TEXT
+    ============================================ */
+    .glitch-text {
+      position: relative;
+      will-change: transform;
+      animation: glitchSkew 4s infinite linear alternate-reverse;
+    }
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .glitch-text::before {
+      color: #ff0040;
+      z-index: -1;
+      animation: glitchShift1 0.3s infinite linear alternate-reverse;
+    }
+    .glitch-text::after {
+      color: #00f0ff;
+      z-index: -2;
+      animation: glitchShift2 0.2s infinite linear alternate-reverse;
+    }
+    @keyframes glitchShift1 {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 1px); }
+      40% { transform: translate(2px, -1px); }
+      60% { transform: translate(-1px, 2px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(-2px, 0); }
+    }
+    @keyframes glitchShift2 {
+      0% { transform: translate(0); }
+      20% { transform: translate(2px, -1px); }
+      40% { transform: translate(-1px, 1px); }
+      60% { transform: translate(3px, 0); }
+      80% { transform: translate(-2px, -1px); }
+      100% { transform: translate(1px, 1px); }
+    }
+    @keyframes glitchSkew {
+      0% { transform: skew(0deg); }
+      2% { transform: skew(0.5deg); }
+      4% { transform: skew(-0.3deg); }
+      6% { transform: skew(0deg); }
+      100% { transform: skew(0deg); }
+    }
+
     .project-info p {
       color: rgba(255,255,255,0.5);
       font-size: 0.9rem;
@@ -1539,6 +1592,9 @@
     [data-theme="light"] .footer-updated {
       color: rgba(0,0,0,0.2);
     }
+    [data-theme="light"] .glitch-text { color: #0066cc; }
+    [data-theme="light"] .glitch-text::before { color: #7c3aed; }
+    [data-theme="light"] .glitch-text::after { color: #0066cc; }
 
     .footer-links {
       display: flex;
@@ -2359,7 +2415,7 @@
           </div>
           <div class="project-info">
             <span class="project-tag">Flagship Project</span>
-            <h3>RedSync</h3>
+            <h3 class="glitch-text" data-text="RedSync">RedSync</h3>
             <p>
               A groundbreaking multiplayer mod for Cyberpunk 2077 that brings full co-op and
               competitive multiplayer to Night City. Custom netcode, dedicated servers, and
