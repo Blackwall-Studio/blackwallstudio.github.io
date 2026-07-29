@@ -1,5 +1,13 @@
 [
   {
+    "date": "Jul 29, 2026",
+    "category": "Dev Diary",
+    "title": "Building Council: A Multi-Model AI Deliberation Engine",
+    "excerpt": "A look inside Council, our open-source multi-model AI deliberation framework. We built it to orchestrate conversations between specialist LLM agents — each with distinct personas — then aggregate their responses through confidence-weighted voting. Here's how it works and why we use it daily.",
+    "author": "Matthew Goodwin",
+    "icon": "🏛"
+  },
+  {
     "date": "Aug 1, 2026",
     "category": "Release",
     "title": "RedSync v1.0.14 — Proximity Voice Chat & Stability Overhaul",
