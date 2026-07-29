@@ -2152,6 +2152,12 @@
   <script type="module">
     import * as THREE from 'three';
 
+    // Theme-aware colors
+    function getThemeColorIntensity() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      return theme === 'light' ? 'light' : 'dark';
+    }
+
     // Canvas
     const canvas = document.getElementById('bg-canvas');
     const renderer = new THREE.WebGLRenderer({
@@ -2175,9 +2181,24 @@
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     const colors = new Float32Array(PARTICLE_COUNT * 3);
 
-    const color1 = new THREE.Color('#00f0ff');
-    const color2 = new THREE.Color('#0066ff');
-    const color3 = new THREE.Color('#7c3aed');
+    // Pick colors based on theme
+    const isLight = getThemeColorIntensity() === 'light';
+    // Dark mode: vibrant cyan/blue/purple glow. Light mode: dark navy/gray/charcoal.
+    let color1, color2, color3;
+    let particleOpacity, particleSize;
+    if (isLight) {
+      color1 = new THREE.Color('#1a1a2e');
+      color2 = new THREE.Color('#2d2d4a');
+      color3 = new THREE.Color('#4a4a6a');
+      particleOpacity = 0.35;
+      particleSize = 0.1;
+    } else {
+      color1 = new THREE.Color('#00f0ff');
+      color2 = new THREE.Color('#0066ff');
+      color3 = new THREE.Color('#7c3aed');
+      particleOpacity = 0.8;
+      particleSize = 0.08;
+    }
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i * 3;
@@ -2203,11 +2224,11 @@
 
     // Particle material
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.08,
+      size: particleSize,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending,
+      opacity: particleOpacity,
+      blending: isLight ? THREE.NormalBlending : THREE.AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,
     });
@@ -2215,10 +2236,13 @@
     scene.add(particles);
 
     // --- CONNECTION LINES (Network edges) ---
+    const lineColor = isLight ? 0x2d2d4a : 0x00f0ff;
+    const lineOpacity = isLight ? 0.12 : 0.08;
+
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x00f0ff,
+      color: lineColor,
       transparent: true,
-      opacity: 0.08,
+      opacity: lineOpacity,
     });
 
     // Pre-compute some lines to draw
@@ -2267,6 +2291,43 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    // --- THEME CHANGE WATCHER (swap scene colors live) ---
+    function applyThemeToScene(theme) {
+      const light = theme === 'light';
+      // Update line material
+      lineMesh.material.color.setHex(light ? 0x2d2d4a : 0x00f0ff);
+      lineMesh.material.opacity = light ? 0.12 : 0.08;
+      // Update particle material
+      particles.material.opacity = light ? 0.35 : 0.8;
+      particles.material.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+      particles.material.size = light ? 0.1 : 0.08;
+
+      // Re-compute particle vertex colors
+      const c1 = new THREE.Color(light ? '#1a1a2e' : '#00f0ff');
+      const c2 = new THREE.Color(light ? '#2d2d4a' : '#0066ff');
+      const c3 = new THREE.Color(light ? '#4a4a6a' : '#7c3aed');
+      const colAttr = geometry.attributes.color;
+      const colArray = colAttr.array;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const t = Math.random();
+        let c;
+        if (t < 0.33) c = c1.clone().lerp(c2, Math.random());
+        else if (t < 0.66) c = c2.clone().lerp(c3, Math.random());
+        else c = c3.clone().lerp(c1, Math.random());
+        const i3 = i * 3;
+        colArray[i3]     = c.r;
+        colArray[i3 + 1] = c.g;
+        colArray[i3 + 2] = c.b;
+      }
+      colAttr.needsUpdate = true;
+    }
+
+    const themeObserver = new MutationObserver(() => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      applyThemeToScene(theme);
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     // --- ANIMATION LOOP ---
     const clock = new THREE.Clock();
