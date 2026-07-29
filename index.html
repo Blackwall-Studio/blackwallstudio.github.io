@@ -10,6 +10,9 @@
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#0a0a0f" />
 
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -105,30 +108,27 @@
       letter-spacing: -0.02em;
     }
     .nav-logo-icon {
-      width: 36px;
-      height: 36px;
-      border: 2px solid #00f0ff;
+      width: 40px;
+      height: 40px;
       border-radius: 8px;
+      border: 2px solid #00f0ff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #00f0ff;
       position: relative;
       overflow: hidden;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
-    .nav-logo-icon::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #00f0ff22, transparent);
-      animation: logoPulse 3s ease-in-out infinite;
+    .nav-logo:hover .nav-logo-icon {
+      border-color: #66f5ff;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.35), 0 0 40px rgba(0, 240, 255, 0.1);
     }
-    @keyframes logoPulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 0.8; }
+    .nav-logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
     }
 
     .nav-links {
@@ -334,7 +334,13 @@
       text-transform: uppercase;
       opacity: 0;
       animation: fadeUp 0.8s ease 1.2s forwards;
+      pointer-events: none;
+      z-index: 3;
     }
+    @media (max-height: 650px) {
+      .hero-scroll { display: none; }
+    }
+
     .hero-scroll .scroll-line {
       width: 1px;
       height: 40px;
@@ -762,14 +768,18 @@
     .footer-brand .bw-icon {
       width: 28px;
       height: 28px;
-      border: 1.5px solid rgba(0,240,255,0.3);
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: #00f0ff;
+      overflow: hidden;
+    }
+    .footer-brand .bw-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
     }
     .footer-links {
       display: flex;
@@ -877,7 +887,9 @@
   <!-- ======== NAVIGATION ======== -->
   <nav id="navbar">
     <a href="#" class="nav-logo">
-      <div class="nav-logo-icon">BW</div>
+      <div class="nav-logo-icon">
+        <img src="favicon.png" alt="Blackwall Studio" width="40" height="40" />
+      </div>
       Blackwall Studio
     </a>
     <ul class="nav-links" id="navLinks">
@@ -1160,7 +1172,9 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="bw-icon">BW</div>
+        <div class="bw-icon">
+          <img src="favicon.png" alt="BW" width="28" height="28" />
+        </div>
         © 2026 Blackwall Studio
       </div>
       <div class="footer-links">
