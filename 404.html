@@ -411,6 +411,23 @@
   <div class="status-code">HTTP 404 · Not Found</div>
 
   <script>
+    // --- Log 404 hits for broken-link tracking ---
+    (function() {
+      try {
+        const hit = {
+          url: window.location.href,
+          referrer: document.referrer || '(direct)',
+          timestamp: new Date().toISOString()
+        };
+        console.log('[BW 404]', hit.url, '←', hit.referrer);
+        const log = JSON.parse(localStorage.getItem('bw-404-log') || '[]');
+        log.push(hit);
+        // Keep only the last 50 entries
+        if (log.length > 50) log.splice(0, log.length - 50);
+        localStorage.setItem('bw-404-log', JSON.stringify(log));
+      } catch (e) { /* localStorage may be unavailable */ }
+    })();
+
     // --- Theme toggle ---
     const savedTheme = localStorage.getItem('bw-theme');
     const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
