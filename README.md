@@ -196,7 +196,7 @@ Purchase `blackwall.studio` from your preferred registrar (Namecheap, Cloudflare
 Once the domain is yours, add the CNAME to git, configure DNS, then push:
 
 ```bash
-git add CNAME
+git add -f CNAME    # -f is required because CNAME is in .gitignore
 git commit -m "feat: Add CNAME for blackwall.studio custom domain"
 git push
 ```
